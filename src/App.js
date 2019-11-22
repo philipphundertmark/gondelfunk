@@ -1,11 +1,14 @@
 import React from 'react';
-import './App.css';
-import CanvasMap from './Components/canvas-map';
+import './App.scss';
+import Canvas from './components/canvas';
+import { useWebSocket } from './hooks/useWebSocket';
 
 function App() {
+  const { messages } = useWebSocket();
+
   return (
     <div className="App">
-      <CanvasMap/>
+      <Canvas data={messages}/>
     </div>
   );
 }
