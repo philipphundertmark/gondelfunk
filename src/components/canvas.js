@@ -60,6 +60,7 @@ const Canvas = () => {
 
 
    function initCanvas(canvas){
+       let viewHeight=1;
        window.setInterval(()=>{
            for(let i=0;i<3;i++){
                state.updateUsers([{
@@ -157,8 +158,8 @@ const Canvas = () => {
            let zoomSpeed=Math.min(ZOOM_SPEED,Math.max(-ZOOM_SPEED,clicks));
            var factor = Math.pow(scaleFactor,zoomSpeed);
            ctx.scale(factor,factor);
+           viewHeight+=zoomSpeed;
            ctx.translate(-pt.x,-pt.y);
-         //  redraw();
        };
 
        var handleScroll = function(evt){
