@@ -29,7 +29,7 @@ const server = http.createServer(app);
 ws.init(server);
 
 setInterval(() => {
-  if (Math.random() < 0.6) {
+  if (Math.random() < 0.8) {
     console.log("No user this time");
     return;
   }
