@@ -84,7 +84,7 @@ const Content = () => {
           </div>
         </div>
 
-        <Canvas />
+        <Canvas onClick={() => console.log("Works")} />
     </div>
   );
 };
