@@ -7,7 +7,7 @@ import { UserContext } from "../contexts/UserContext";
 import { WebSocketContext } from "../contexts/WebSocketContext";
 
 const Content = () => {
-  const { onLogout } = useContext(UserContext);
+  const { user, onLogout } = useContext(UserContext);
   const { send } = useContext(WebSocketContext);
   const [message, setMessage] = useState("");
 
@@ -22,7 +22,10 @@ const Content = () => {
     if (!message) {
       return;
     }
-    send(message);
+    send({
+      userId: user.id,
+      message
+    });
     setMessage("");
   }
 
