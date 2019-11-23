@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { WebSocketContext } from "../contexts/WebSocketContext";
 import State from '../state';
 import * as CHelper from '../canvas-helper';
+import _ from 'lodash';
 
 const WIDTH=700;
 const HEIGHT=1000;
@@ -10,19 +11,29 @@ const HEIGHT_GONDEL=100;
 const ZOOM_SPEED=0.2;
 const DEFAULT_INTERPOLATION_INTERVAL=100;
 
+const ANIMATION_SPEED_MESSAGE=3000;
+const ANIMATION_SPEED_LOCATION=1000;
 /**TODO
  * scale Invariance
  * interpolate messages
  * interpolate target messages
+ * click handler for recipient
  */
 
 const Canvas = () => {
+    console.warn("INIT");
   const { subscribe } = useContext(WebSocketContext);
   const canvasRef = React.createRef();
 
-  const state=new State();
+  const state=new State(ANIMATION_SPEED_MESSAGE,ANIMATION_SPEED_LOCATION);
+  let initialStates=Array.from({length:10},(el,i)=>{
+      return {
+          id:i,
+          location: {x: Math.random() * 1000, y: Math.random()*1000}
+      }
+  });
+  state.updateUsers(initialStates);
 
-  window.requestAnimationFrame(()=>state.tick)
 
   function updateData(data){
       if(data.type==="user"){
@@ -37,7 +48,7 @@ const Canvas = () => {
   }
 
   useEffect(() => {
-    const subscription = subscribe({
+      const subscription = subscribe({
       next: (data) => {
         updateData(data);
       }
@@ -49,17 +60,27 @@ const Canvas = () => {
 
 
    function initCanvas(canvas){
-
        window.setInterval(()=>{
-           for(let i=0;i<10;i++){
+           for(let i=0;i<3;i++){
                state.updateUsers([{
-                   id: Math.round(Math.random() * 40),
+                   id: _.random(0,10),
                    location: {x: Math.random() * 1000, y: Math.random()*1000}
                }]);
-
-               redraw();
            }
-       },800);
+
+           for(let i=0;i<2;i++){
+               let rand_text = Math.random().toString(36).substring(7);
+               let message={
+                   id:_.random(0,10000000),
+                   user_id:_.random(0,9),
+                   message:rand_text,
+                   target_id: Math.random()>0.8 ? null : _.random(0,9)
+               };
+               state.updateMessages([message]);
+           }
+       },2000);
+
+       window.requestAnimationFrame(redraw);
 
        let backgroundImage=document.getElementById('skikarte');
        let gondelImage=document.getElementById('gondel');
@@ -79,11 +100,23 @@ const Canvas = () => {
                let y=user.location.y;
                ctx.drawImage(gondelImage,x-WIDTH_GONDEL/2,y-HEIGHT_GONDEL/2,WIDTH_GONDEL,HEIGHT_GONDEL);
                ctx.restore();
-
-               CHelper.speechBubble(ctx,"Hallo welt",x,y);
            }
 
+           for(let message of state.getMessages()){
+               ctx.save();
+               let x,y=null;
+               if(message.location){
+                    x=message.location.x;
+                    y=message.location.y;
+               }else{
+                   x=message.user.location.x;
+                   y=message.user.location.y;
+               }
 
+               CHelper.speechBubble(ctx,message.message,x,y);
+           }
+
+            window.requestAnimationFrame(redraw);
 
        }
 
@@ -91,7 +124,7 @@ const Canvas = () => {
            ctx.drawImage(backgroundImage,200,50);
        }
 
-       redraw();
+       //redraw();
 
        var lastX=canvas.width/2, lastY=canvas.height/2;
        var dragStart,dragged;
@@ -109,7 +142,7 @@ const Canvas = () => {
            if (dragStart){
                var pt = ctx.transformedPoint(lastX,lastY);
                ctx.translate(pt.x-dragStart.x,pt.y-dragStart.y);
-               redraw();
+               //redraw();
            }
        },false);
        canvas.addEventListener('mouseup',function(evt){
@@ -125,7 +158,7 @@ const Canvas = () => {
            var factor = Math.pow(scaleFactor,zoomSpeed);
            ctx.scale(factor,factor);
            ctx.translate(-pt.x,-pt.y);
-           redraw();
+         //  redraw();
        };
 
        var handleScroll = function(evt){
