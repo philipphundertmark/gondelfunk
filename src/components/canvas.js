@@ -1,18 +1,45 @@
 import React, { useContext, useEffect } from "react";
 import { WebSocketContext } from "../contexts/WebSocketContext";
+import State from '../state';
+import * as CHelper from '../canvas-helper';
 
 const WIDTH=700;
 const HEIGHT=1000;
+const WIDTH_GONDEL=100;
+const HEIGHT_GONDEL=100;
+const ZOOM_SPEED=0.2;
+const DEFAULT_INTERPOLATION_INTERVAL=100;
+
+/**TODO
+ * scale Invariance
+ * interpolate messages
+ * interpolate target messages
+ */
 
 const Canvas = () => {
   const { subscribe } = useContext(WebSocketContext);
   const canvasRef = React.createRef();
 
+  const state=new State();
+
+  window.requestAnimationFrame(()=>state.tick)
+
+  function updateData(data){
+      if(data.type==="user"){
+        state.updateUsers(data);
+      }else if(data.type==="message"){
+        state.updateMessages(data);
+      }
+  }
+
+  function animateAnswer(){
+      //take start position of sender and animate to position of receiver
+  }
+
   useEffect(() => {
     const subscription = subscribe({
-      next: (message) => {
-        console.log(message);
-        // setMessages(messages => [...messages, message]);
+      next: (data) => {
+        updateData(data);
       }
     });
     return () => {
@@ -22,57 +49,48 @@ const Canvas = () => {
 
 
    function initCanvas(canvas){
-       let image=document.getElementById('skikarte');
+
+       window.setInterval(()=>{
+           for(let i=0;i<10;i++){
+               state.updateUsers([{
+                   id: Math.round(Math.random() * 40),
+                   location: {x: Math.random() * 1000, y: Math.random()*1000}
+               }]);
+
+               redraw();
+           }
+       },800);
+
+       let backgroundImage=document.getElementById('skikarte');
+       let gondelImage=document.getElementById('gondel');
+
        var ctx = canvas.getContext('2d');
        trackTransforms(ctx);
+
        function redraw(){
-           // Clear the entire canvas
            var p1 = ctx.transformedPoint(0,0);
            var p2 = ctx.transformedPoint(canvas.width,canvas.height);
            ctx.clearRect(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
+           drawBackground(ctx);
 
-           // Alternatively:
-           // ctx.save();
-           // ctx.setTransform(1,0,0,1,0,0);
-           // ctx.clearRect(0,0,canvas.width,canvas.height);
-           // ctx.restore();
+           for(let user of state.getUsers()){
+               ctx.save();
+               let x=user.location.x;
+               let y=user.location.y;
+               ctx.drawImage(gondelImage,x-WIDTH_GONDEL/2,y-HEIGHT_GONDEL/2,WIDTH_GONDEL,HEIGHT_GONDEL);
+               ctx.restore();
 
-           ctx.drawImage(image,200,50);
-
-           ctx.beginPath();
-           ctx.lineWidth = 6;
-           ctx.moveTo(399,250);
-           ctx.lineTo(474,256);
-           ctx.stroke();
-
-           ctx.save();
-           ctx.translate(4,2);
-           ctx.beginPath();
-           ctx.lineWidth = 1;
-           ctx.moveTo(436,253);
-           ctx.lineTo(437.5,233);
-           ctx.stroke();
-
-           ctx.save();
-           ctx.translate(438.5,223);
-           ctx.strokeStyle = '#06c';
-           ctx.beginPath();
-           ctx.lineWidth = 0.05;
-           for (var i=0;i<60;++i){
-               ctx.rotate(6*i*Math.PI/180);
-               ctx.moveTo(9,0);
-               ctx.lineTo(10,0);
-               ctx.rotate(-6*i*Math.PI/180);
+               CHelper.speechBubble(ctx,"Hallo welt",x,y);
            }
-           ctx.stroke();
-           ctx.restore();
 
-           ctx.beginPath();
-           ctx.lineWidth = 0.2;
-           ctx.arc(438.5,223,10,0,Math.PI*2);
-           ctx.stroke();
-           ctx.restore();
+
+
        }
+
+       function drawBackground(ctx){
+           ctx.drawImage(backgroundImage,200,50);
+       }
+
        redraw();
 
        var lastX=canvas.width/2, lastY=canvas.height/2;
@@ -99,15 +117,16 @@ const Canvas = () => {
            if (!dragged) zoom(evt.shiftKey ? -1 : 1 );
        },false);
 
-       var scaleFactor = 1.1;
+       var scaleFactor = 1.2;
        var zoom = function(clicks){
            var pt = ctx.transformedPoint(lastX,lastY);
            ctx.translate(pt.x,pt.y);
-           var factor = Math.pow(scaleFactor,clicks);
+           let zoomSpeed=Math.min(ZOOM_SPEED,Math.max(-ZOOM_SPEED,clicks));
+           var factor = Math.pow(scaleFactor,zoomSpeed);
            ctx.scale(factor,factor);
            ctx.translate(-pt.x,-pt.y);
            redraw();
-       }
+       };
 
        var handleScroll = function(evt){
            var delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.detail ? -evt.detail : 0;
@@ -116,7 +135,7 @@ const Canvas = () => {
        };
        canvas.addEventListener('DOMMouseScroll',handleScroll,false);
        canvas.addEventListener('mousewheel',handleScroll,false);
-   };
+   }
 
 
     // Adds ctx.getTransform() - returns an SVGMatrix
