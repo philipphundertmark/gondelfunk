@@ -1,4 +1,4 @@
-function speechBubble(ctx, text, x, y,highlighted) {
+function speechBubble(ctx, text, x, y,highlighted,opacity) {
     var messure = ctx.measureText(text);
 
     var w = messure.width;
@@ -9,9 +9,9 @@ function speechBubble(ctx, text, x, y,highlighted) {
     ctx.lineWidth="1";
     ctx.font = "16px Rubik";
     if(highlighted) {
-        ctx.fillStyle = "rgba(255, 100, 100, 0.8)";
+        ctx.fillStyle = "rgba(255, 100, 100,"+ opacity+")";
     }else{
-        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.fillStyle = "rgba(255, 255, 255, " + opacity+")";
     }
 
     ctx.moveTo(x, y);
@@ -45,4 +45,15 @@ function speechBubble(ctx, text, x, y,highlighted) {
     return {width:w*1.5,height:h*1.5};
 }
 
-export {speechBubble}
+function emoticonBubble(ctx,code,x,y,opacity){
+    let elementId='emoticonFrozen';
+    switch(code){
+        case 0:
+            elementId='emoticonFrozen';
+            break;
+    }
+    let image=document.getElementById(elementId);
+    ctx.drawImage(image,x,y,40,40);
+}
+
+export {speechBubble,emoticonBubble}
