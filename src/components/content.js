@@ -6,7 +6,6 @@ const Content = ({ children }) => {
   return (
     <div className="app-content">
         <Canvas />
-        {children}
     </div>
   );
 };
