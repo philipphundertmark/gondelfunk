@@ -1,7 +1,9 @@
 const cors = require('cors');
 const express = require('express');
 const http = require("http");
+const uniqid = require("uniqid");
 const api = require('./api');
+const store = require('./store');
 const ws = require("./websocket");
 
 const BASE_URL = '/api';
@@ -25,14 +27,29 @@ const server = http.createServer(app);
 
 ws.init(server);
 
-(async function() {
-  /**
-   * TODO: Connect to redis here
-   */
+setInterval(() => {
+  if (Math.random() < 0.6) {
+    console.log("No user this time");
+    return;
+  }
+  
+  console.log("Create user");
+  
+  const userId = uniqid("user-");
 
-  const port = process.env.PORT || 8000;
+  const user = {
+    userId,
+    age: Math.floor(Math.random() * (50 - 18 + 1)) + 18,
+    gender: Math.random() < 0.5 ? "venus" : "mars",
+    track: Math.floor(Math.random() * 4)
+  };
+  
+  console.log(user);
 
-  server.listen(port, () => {
-    console.log(`Server listening on port ${port}...`);
-  });
-})();
+}, 2000)
+
+const port = process.env.PORT || 8000;
+
+server.listen(port, () => {
+  console.log(`Server listening on port ${port}...`);
+});

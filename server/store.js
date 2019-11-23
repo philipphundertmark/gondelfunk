@@ -3,15 +3,15 @@
  */
 class Store {
     constructor() {
-        this.store = {};
+        this.users = [];
     }
 
     get(key) {
-        return this.store[key];
+        return this.users[key];
     }
 
     set(key, value) {
-        this.store[key] = value;
+        this.users[key] = value;
     }
 }
   
