@@ -86,7 +86,7 @@ const Canvas = React.memo(() => {
                };
                state.updateMessages([message]);
            }
-       },2000);
+       },20000000);
 
        window.requestAnimationFrame(redraw);
 
@@ -133,7 +133,7 @@ const Canvas = React.memo(() => {
        }
 
        function drawBackground(ctx){
-           ctx.drawImage(backgroundImage,200,50);
+           ctx.drawImage(backgroundImage,0,0,1651,3000);
        }
 
        //redraw();
@@ -144,6 +144,8 @@ const Canvas = React.memo(() => {
            document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
            lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
            lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
+
+           console.log("coordinates2",lastX,lastY);
            dragStart = ctx.transformedPoint(lastX,lastY);
            dragged = false;
        },false);
@@ -151,17 +153,16 @@ const Canvas = React.memo(() => {
            lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
            lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
 
-          // console.log(lastX,lastY);
-
            dragged = true;
            if (dragStart){
                var pt = ctx.transformedPoint(lastX,lastY);
                viewTransform.x+=pt.x-dragStart.x;
                viewTransform.y+=pt.y-dragStart.y;
-
-
+               /*
+               console.log(viewHeight);
+               console.log(viewTransform.x,viewTransform.y);
+               */
                ctx.translate(pt.x-dragStart.x,pt.y-dragStart.y);
-               //redraw();
            }
        },false);
        canvas.addEventListener('mouseup',function(evt){
@@ -172,13 +173,19 @@ const Canvas = React.memo(() => {
        var scaleFactor = 1.2;
        var zoom = function(clicks){
            var pt = ctx.transformedPoint(lastX,lastY);
-           ctx.translate(pt.x,pt.y);
+
            let zoomSpeed=Math.min(ZOOM_SPEED,Math.max(-ZOOM_SPEED,clicks));
            var factor = Math.pow(scaleFactor,zoomSpeed);
+           if(viewHeight*factor<0.25|| viewHeight*factor>1.5){
+               return;
+           }
+           console.log(pt);
+          ctx.translate(pt.x,pt.y);
            viewHeight*=factor;
-           viewTransform.x+=-pt.x;
-           viewTransform.y+=-pt.y;
-           console.log(viewTransform,viewHeight);
+
+           /*viewTransform.x+=-pt.x;
+           viewTransform.y+=-pt.y;*/
+           //console.log(viewTransform,viewHeight);
            ctx.scale(factor,factor);
            ctx.translate(-pt.x,-pt.y);
        };
