@@ -72,10 +72,14 @@ const Content = () => {
               <FontAwesomeIcon icon={faLaugh} />
             )}
             <ul className={`emoji-list ${showEmojis ? "is-displayed" : ""}`}>
+              <li onClick={() => sendEmoji("🚠")}><span role="img" aria-label="emoji">🚠</span></li>
               <li onClick={() => sendEmoji("😎")}><span role="img" aria-label="emoji">😎</span></li>
+              <li onClick={() => sendEmoji("🤩")}><span role="img" aria-label="emoji">🤩</span></li>
               <li onClick={() => sendEmoji("🥶")}><span role="img" aria-label="emoji">🥶</span></li>
-              <li onClick={() => sendEmoji("💩")}><span role="img" aria-label="emoji">💩</span></li>
               <li onClick={() => sendEmoji("🍆")}><span role="img" aria-label="emoji">🍆</span></li>
+              <li onClick={() => sendEmoji("🏔")}><span role="img" aria-label="emoji">🏔</span></li>
+              <li onClick={() => sendEmoji("🍺")}><span role="img" aria-label="emoji">🍺</span></li>
+              <li onClick={() => sendEmoji("💩")}><span role="img" aria-label="emoji">💩</span></li>
             </ul>
           </div>
           <input placeholder="Funk something" spellCheck={false} value={message} onChange={handleMessageChange} className="message-input" onKeyDown={handleKeyDown}/>

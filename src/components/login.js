@@ -5,11 +5,9 @@ import './login.scss';
 import Sex from './sex';
 import gondel from "../assets/gondel.svg";
 import { UserContext } from "../contexts/UserContext";
-import { WebSocketContext } from "../contexts/WebSocketContext";
 
 const Login = ({ history }) => {
   const { onLogin, user } = useContext(UserContext);
-  const { send } = useContext(WebSocketContext);
   const [age, setAge] = useState(18);
   const [gender, setGender] = useState("venus");
 
@@ -37,11 +35,6 @@ const Login = ({ history }) => {
       id: userId,
       age,
       gender
-    });
-
-    send({
-      type: "login", 
-      of: userId
     });
   }
 
