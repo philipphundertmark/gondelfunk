@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { WebSocketContext } from "../contexts/WebSocketContext";
-import State from '../state';
+import state from '../state';
 import * as CHelper from '../canvas-helper';
 import _ from 'lodash';
 import {find} from "rxjs/operators";
@@ -11,6 +11,7 @@ const WIDTH_GONDEL=100;
 const HEIGHT_GONDEL=100;
 const ZOOM_SPEED=0.3;
 const SCALE_FOR_VISIBLE=0.5;
+const MIN_ZOOM=0.2;
 const DEFAULT_INTERPOLATION_INTERVAL=100;
 
 const ANIMATION_SPEED_MESSAGE=3000;
@@ -27,8 +28,8 @@ const Canvas = React.memo(({onClick}) => {
   const canvasRef = React.createRef();
 
   const [initialized,setInitialized] = React.useState(false);
-  const state=new State(ANIMATION_SPEED_MESSAGE,ANIMATION_SPEED_LOCATION);
-  let initialStates=Array.from({length:10},(el,i)=>{
+ // const state=new State(ANIMATION_SPEED_MESSAGE,ANIMATION_SPEED_LOCATION);
+  let initialStates=Array.from({length:1},(el,i)=>{
       return {
           id:i,
           location: {x: Math.random() * 1000, y: Math.random()*1000}
@@ -43,6 +44,7 @@ const Canvas = React.memo(({onClick}) => {
       }else if(data.type==="message"){
         state.updateMessages(data["data"]);
       }
+
   }
 
   function animateAnswer(){
@@ -68,7 +70,7 @@ const Canvas = React.memo(({onClick}) => {
        let viewHeight=1;
        let viewTransform={x:0,y:0};
 
-       window.setInterval(()=>{
+      /* window.setInterval(()=>{
           for(let i=0;i<10;i++){
                state.updateUsers([{
                    id: _.random(0,10),
@@ -76,7 +78,7 @@ const Canvas = React.memo(({onClick}) => {
                }]);
            }
 
-           for(let i=0;i<40;i++){
+          for(let i=0;i<40;i++){
                let rand_text = Math.random().toString(36).substring(7);
                let message={
                    id:_.random(0,10000000),
@@ -87,7 +89,7 @@ const Canvas = React.memo(({onClick}) => {
                state.updateMessages([message]);
            }
        },2000);
-
+*/
        window.requestAnimationFrame(redraw);
 
        let backgroundImage=document.getElementById('skikarte');
@@ -214,7 +216,6 @@ const Canvas = React.memo(({onClick}) => {
                    viewTransform.x += pt.x - dragStart.x;
                    viewTransform.y += pt.y - dragStart.y;
                }
-               console.log(viewTransform,viewHeight);
 
           //     console.log(pt.y-dPy*evt.offsetY);
               // console.log(dy,pt.y-dPy*evt.offsetY);
@@ -247,7 +248,7 @@ const Canvas = React.memo(({onClick}) => {
 
            let zoomSpeed=Math.min(ZOOM_SPEED,Math.max(-ZOOM_SPEED,clicks));
            let factor = Math.pow(scaleFactor,zoomSpeed);
-           if(viewHeight*factor<0.2|| viewHeight*factor>1.5){
+           if(viewHeight*factor<MIN_ZOOM|| viewHeight*factor>1.5){
                return;
            }
 
