@@ -15,8 +15,6 @@ const ANIMATION_SPEED_MESSAGE=3000;
 const ANIMATION_SPEED_LOCATION=1000;
 /**TODO
  * scale Invariance
- * interpolate messages
- * interpolate target messages
  * click handler for recipient
  */
 
@@ -84,7 +82,7 @@ const Canvas = React.memo(() => {
                };
                state.updateMessages([message]);
            }
-       },2000);
+       },1000000000);
 
        window.requestAnimationFrame(redraw);
 
@@ -99,11 +97,15 @@ const Canvas = React.memo(() => {
            var p2 = ctx.transformedPoint(canvas.width,canvas.height);
            ctx.clearRect(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
            drawBackground(ctx);
-
+           ctx.save();
            for(let user of state.getUsers()){
                let x=user.location.x;
                let y=user.location.y;
-               ctx.drawImage(gondelImage,x-WIDTH_GONDEL/2,y-HEIGHT_GONDEL/2,WIDTH_GONDEL,HEIGHT_GONDEL);
+
+               let scaleFactor=Math.max(1,viewHeight);
+               let width=WIDTH_GONDEL*1/scaleFactor;
+               let height=HEIGHT_GONDEL*1/scaleFactor;
+               ctx.drawImage(gondelImage,x-width/2,y-height/2,width,height);
            }
 
            for(let message of state.getMessages()){
@@ -159,8 +161,9 @@ const Canvas = React.memo(() => {
            ctx.translate(pt.x,pt.y);
            let zoomSpeed=Math.min(ZOOM_SPEED,Math.max(-ZOOM_SPEED,clicks));
            var factor = Math.pow(scaleFactor,zoomSpeed);
+           viewHeight*=factor;
            ctx.scale(factor,factor);
-           viewHeight+=zoomSpeed;
+           //viewHeight+=zoomSpeed;
            ctx.translate(-pt.x,-pt.y);
        };
 
