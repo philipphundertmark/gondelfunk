@@ -14,8 +14,10 @@ const DEFAULT_INTERPOLATION_INTERVAL=100;
 const ANIMATION_SPEED_MESSAGE=3000;
 const ANIMATION_SPEED_LOCATION=1000;
 /**TODO
- * scale Invariance
- * click handler for recipient
+ * click handler for recipient+
+ * min max translation and scale
+ * receive data from websocket
+ * wobbling gondle
  */
 
 const Canvas = React.memo(() => {
@@ -62,8 +64,10 @@ const Canvas = React.memo(() => {
            return;
        }
        setInitialized(true);
-       console.log("initCanvas");
        let viewHeight=1;
+       let viewTransform={x:0,y:0};
+
+
        window.setInterval(()=>{
            for(let i=0;i<40;i++){
                state.updateUsers([{
@@ -88,6 +92,9 @@ const Canvas = React.memo(() => {
 
        let backgroundImage=document.getElementById('skikarte');
        let gondelImage=document.getElementById('gondel');
+
+       canvas.width = WIDTH;
+       canvas.height = HEIGHT;
 
        var ctx = canvas.getContext('2d');
        trackTransforms(ctx);
@@ -143,9 +150,15 @@ const Canvas = React.memo(() => {
        canvas.addEventListener('mousemove',function(evt){
            lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
            lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
+
+           console.log(lastX,lastY);
+           console.log(lastX)
            dragged = true;
            if (dragStart){
                var pt = ctx.transformedPoint(lastX,lastY);
+               viewTransform.x+=pt.x-dragStart.x;
+               viewTransform.y+=pt.y-dragStart.y;
+               console.log(viewTransform,viewHeight);
                ctx.translate(pt.x-dragStart.x,pt.y-dragStart.y);
                //redraw();
            }
@@ -162,8 +175,10 @@ const Canvas = React.memo(() => {
            let zoomSpeed=Math.min(ZOOM_SPEED,Math.max(-ZOOM_SPEED,clicks));
            var factor = Math.pow(scaleFactor,zoomSpeed);
            viewHeight*=factor;
+           viewTransform.x+=-pt.x;
+           viewTransform.y+=-pt.y;
+           console.log(viewTransform,viewHeight);
            ctx.scale(factor,factor);
-           //viewHeight+=zoomSpeed;
            ctx.translate(-pt.x,-pt.y);
        };
 
@@ -238,21 +253,6 @@ const Canvas = React.memo(() => {
   useEffect(() => {
     const { current: canvas } = canvasRef;
 
-     const dpr = window.devicePixelRatio || 1;
-    // // Get the size of the canvas in CSS pixels.
-     const rect = canvas.getBoundingClientRect();
-    // // Give the canvas pixel dimensions of their CSS
-     //size * the device pixel ratio.
-     canvas.width = WIDTH;
-     canvas.height = HEIGHT;
-
-    // // get 2d context to draw on (the "bitmap" mentioned earlier)
-     const ctx = canvas.getContext("2d");
-
-     ctx.clearRect(0, 0, canvas.width, canvas.height);
-     ctx.fillStyle="gray";
-     ctx.fillRect(0,0,200,200);
-     console.log("CALL");
      initCanvas(canvas);
   }, [canvasRef, initCanvas]);
 

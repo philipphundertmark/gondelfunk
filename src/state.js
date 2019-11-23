@@ -72,16 +72,12 @@ export default class State{
     updateUsers(data){
         for(let user of data){
             if(this.users[user.id]){
-            //    this.users[user.id]=Object.assign(this.users[user.id],user);
+                //assume that only the location can change
                 this._interpolateLocation(this.users[user.id].location,user.location);
             }else{
                 this.users[user.id]=user;
             }
         }
-    }
-
-    tick(delta){
-
     }
 
     getUsers(){
