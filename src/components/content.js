@@ -31,12 +31,17 @@ const Content = ({ children }) => {
 
   return (
     <div className="app-content">
+        <div className="top-bar">
+          <h3>Gondelfunk</h3>
+        </div>
+
         <div className="bottom-bar">
           <input spellCheck={false} value={message} onChange={handleMessageChange} className="message-input" onKeyDown={handleKeyDown}/>
           <div className={`send-button ${!message ? "is-disabled" : ""}`} onClick={sendMessage}>
             <FontAwesomeIcon icon={faBroadcastTower} />
           </div>
         </div>
+
         <Canvas />
     </div>
   );

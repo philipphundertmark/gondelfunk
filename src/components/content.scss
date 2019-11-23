@@ -15,6 +15,20 @@
         background: linear-gradient(0deg, rgba(38, 52, 70, 0.5) 0%, rgba(0,0,0,0) 100%);
     }
 
+    .top-bar {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        right: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        h3 {
+            text-align: center;
+        }
+    }
+
     .bottom-bar {
         position: absolute;
         bottom: 16px;
