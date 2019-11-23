@@ -24,7 +24,9 @@ const WebSocketProvider = ({ children }) => {
     };
     // Important!!!
     ws.onmessage = ({ data: msg }) => {
-      const { data } = JSON.parse(msg);
+      const data = JSON.parse(msg);
+      console.log(data);
+      
       subject.next(data);
     };
     ws.onclose = () => {
@@ -38,12 +40,16 @@ const WebSocketProvider = ({ children }) => {
     };
   }, []);
 
+  const sendMessage = (data) => {
+    ws.send(JSON.stringify(data));
+  }
+
   return (
     <WebSocketContext.Provider
       value={{
         connected,
         subscribe: subject.subscribe.bind(subject),
-        send: ws.send.bind(ws)
+        send: sendMessage
       }}
     >
       {children}
