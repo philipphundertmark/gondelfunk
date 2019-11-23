@@ -4,7 +4,7 @@ services:
   redis:
     container_name: gondelfunk_redis
     image: redis:latest
-    networks: 
+    networks:
       - backend
     ports:
       - "6379:6379"
@@ -18,13 +18,13 @@ services:
     environment:
       PORT: "8000"
     image: gondelfunk_server
-    networks: 
+    networks:
       - backend
     ports:
       - "8000:8000"
     restart: always
     volumes:
-       - ./server:/gondelfunk/server
+      - ./server:/gondelfunk/server
 
 networks:
   backend:
