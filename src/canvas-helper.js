@@ -1,4 +1,4 @@
-function speechBubble(ctx, text, x, y) {
+function speechBubble(ctx, text, x, y,highlighted) {
     var messure = ctx.measureText(text);
 
     var w = messure.width;
@@ -7,7 +7,12 @@ function speechBubble(ctx, text, x, y) {
     ctx.beginPath();
     ctx.strokeStyle="black";
     ctx.lineWidth="1";
-    ctx.fillStyle="rgba(255, 255, 255, 0.8)";
+    ctx.font = "16px Rubik";
+    if(highlighted) {
+        ctx.fillStyle = "rgba(255, 100, 100, 0.8)";
+    }else{
+        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+    }
 
     ctx.moveTo(x, y);
     ctx.lineTo(x + (w*0.2), y);
@@ -36,6 +41,8 @@ function speechBubble(ctx, text, x, y) {
     ctx.textAlign = 'left';
     ctx.fillStyle = '#000';
     ctx.fillText(text, x, y-6);
+
+    return {width:w*1.5,height:h*1.5};
 }
 
 export {speechBubble}

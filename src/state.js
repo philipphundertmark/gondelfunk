@@ -19,6 +19,12 @@ export default class State{
                 this.messages[message.id]=Object.assign(this.messages[message.id],message);
             }else{
                 message.user=this.users[message.user_id];
+
+                let messageForUser=this.getMessageForUser(message.user_id)
+                if(messageForUser){
+                    delete this.messages[messageForUser.id];
+                }
+
                 message.attention=1;
                 if(message.target_id && this.users[message.target_id]){
                     message.target=this.users[message.target_id];
@@ -29,6 +35,10 @@ export default class State{
                 this.messages[message.id]=message;
             }
         }
+    }
+
+    getMessageForUser(user_id){
+        return _.find(this.getMessages(),{'user_id':user_id,target_id:null})
     }
 
     _interpolateLocation(location,target){

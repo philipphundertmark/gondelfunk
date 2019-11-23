@@ -13,7 +13,7 @@ const ZOOM_SPEED=0.2;
 const DEFAULT_INTERPOLATION_INTERVAL=100;
 
 const ANIMATION_SPEED_MESSAGE=3000;
-const ANIMATION_SPEED_LOCATION=1000;
+const ANIMATION_SPEED_LOCATION=3000;
 /**TODO
  * click handler for recipient+
  * min max translation and scale
@@ -67,26 +67,25 @@ const Canvas = React.memo(({onClick}) => {
        let viewHeight=1;
        let viewTransform={x:0,y:0};
 
-
        window.setInterval(()=>{
-           for(let i=0;i<40;i++){
+          for(let i=0;i<10;i++){
                state.updateUsers([{
                    id: _.random(0,10),
-                   location: {x: Math.random() * 1000, y: Math.random()*1000}
+                   location: {x: Math.random() * 100, y: Math.random()*1000}
                }]);
            }
 
-           for(let i=0;i<20;i++){
+           for(let i=0;i<40;i++){
                let rand_text = Math.random().toString(36).substring(7);
                let message={
                    id:_.random(0,10000000),
                    user_id:_.random(0,9),
                    message:rand_text,
-                   target_id: Math.random()>0.8 ? null : _.random(0,9)
+                   target_id: Math.random()<0.95 ? null : _.random(0,9)
                };
                state.updateMessages([message]);
            }
-       },20000000);
+       },1000);
 
        window.requestAnimationFrame(redraw);
 
@@ -99,24 +98,32 @@ const Canvas = React.memo(({onClick}) => {
        let ctx = canvas.getContext('2d');
        trackTransforms(ctx);
 
-       function findGondolaAtPosition(clickX,clickY){
-           let users=state.getUsers();
+       function findMessageAtPosition(clickX,clickY){
+           let messages=state.getMessages();
 
-           let scaleFactor=Math.max(1,viewHeight);
-           let width_gondola=WIDTH_GONDEL*1/scaleFactor;
-           let height_gondola=HEIGHT_GONDEL*1/scaleFactor;
-           for(let user of users){
-               let x=user.location.x;
-               let y=user.location.y;
-
-               if(clickX>=x-width_gondola/2&&clickX<=x+width_gondola/2 &&clickY>=y-height_gondola/2&&clickY<=y+height_gondola/2){
-                   console.log("user is ",user);
-                   return user;
+           for(let message of messages){
+               if(message.target_id || !message.user.location){
+                   continue;
+               }
+               let x=message.user.location.x;
+               let y=message.user.location.y;
+               let width_textfield=message.dimensions.width;
+               let height_textfield=message.dimensions.height;
+               if(clickX>=x&&clickX<=x+width_textfield &&clickY>=y-height_textfield&&clickY<=y){
+                   return message;
                }
            }
 
-           console.log("no user");
            return null;
+       }
+
+       function onDeselectMessage(message){
+           message.selected=false;
+       }
+
+       function onSelectMessage(message){
+           state.getMessages().forEach(message=>message.selected=false);
+           message.selected=true;
        }
 
        function redraw(){
@@ -145,7 +152,8 @@ const Canvas = React.memo(({onClick}) => {
                    y=message.user.location.y;
                }
 
-               CHelper.speechBubble(ctx,message.message,x,y);
+               let dimensions=CHelper.speechBubble(ctx,message.message,x,y,message.selected);
+               message.dimensions=dimensions;
            }
 
             window.requestAnimationFrame(redraw);
@@ -185,11 +193,14 @@ const Canvas = React.memo(({onClick}) => {
        canvas.addEventListener('mouseup',function(evt){
            dragStart = null;
            if (!dragged) {
-               let pt = ctx.transformedPoint(lastX,lastY);
-               let gondola=findGondolaAtPosition(pt.x,pt.y);
-               if(gondola){
-                   onClick(gondola.user_id,gondola.message);
-               }
+
+           }
+
+           let pt = ctx.transformedPoint(lastX,lastY);
+           let message=findMessageAtPosition(pt.x,pt.y);
+           if(message){
+               onSelectMessage(message);
+               onClick(message.user_id,message.message,()=>onDeselectMessage(message));
            }
        },false);
 
