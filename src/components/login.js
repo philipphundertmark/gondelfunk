@@ -9,7 +9,6 @@ const Login = ({ history }) => {
   const { onLogin, user } = useContext(UserContext);
   const [age, setAge] = useState(18);
   const [gender, setGender] = useState("venus");
-  const [error, setError] = useState(null);
 
   const handleAgeChange = (event) => {
     const { value } = event.target;
@@ -18,7 +17,6 @@ const Login = ({ history }) => {
 
   const isFormValid = () => {
     if (age < 18) {
-      setError("You must be at least 18 years old")
       return false;
     }
 
@@ -29,8 +27,6 @@ const Login = ({ history }) => {
     if (!isFormValid()) {
       return;
     }
-
-    setError("");
 
     onLogin({
       age,

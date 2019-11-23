@@ -10,13 +10,15 @@ const initialContext = {
 
 const WS_ADDR = process.env.WS_ADDR || "ws://localhost:8000/";
 
+const ws = new WebSocket(WS_ADDR);
+
 const WebSocketContext = React.createContext(initialContext);
 
 const WebSocketProvider = ({ children }) => {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    const ws = new WebSocket(WS_ADDR);
+    
     ws.onopen = () => {
       setConnected(true);
     };
@@ -40,7 +42,8 @@ const WebSocketProvider = ({ children }) => {
     <WebSocketContext.Provider
       value={{
         connected,
-        subscribe: subject.subscribe.bind(subject)
+        subscribe: subject.subscribe.bind(subject),
+        send: ws.send.bind(ws)
       }}
     >
       {children}
