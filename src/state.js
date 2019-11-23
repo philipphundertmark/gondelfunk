@@ -67,7 +67,7 @@ class State{
         //decay messages
         let deleteIds=[];
         for(let message of _.values(this.messages)){
-            message.attention-=deltaTime/1000*1/5;
+            message.attention-=deltaTime/1000*1/50;
             if(message.attention<0){
                deleteIds.push(message.id);
             }

@@ -25,7 +25,6 @@ const WebSocketProvider = ({ children }) => {
     // Important!!!
     ws.onmessage = ({ data: msg }) => {
       const data = JSON.parse(msg);
-      console.log(data);
       
       subject.next(data);
     };

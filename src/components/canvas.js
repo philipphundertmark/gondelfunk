@@ -192,11 +192,12 @@ const Canvas = React.memo(({onClick}) => {
                }
 
           //     console.log(pt.y-dPy*evt.offsetY);
-              // console.log(dy,pt.y-dPy*evt.offsetY);
+               console.log("up",dy, pt.y-dPy*evt.offsetY);
+               console.log("down",dy,pt.y+dPy*(750-evt.offsetY));
 
-              // if((dy<=0 && pt.y-dPy*evt.offsetY>=0)){// && pt.y+dPy*(750-evt.offsetY))<=1650){
+              if((dy>0 && pt.y-dPy*evt.offsetY>=-10) || (dy<=0 && (pt.y+dPy*(750-evt.offsetY))<=3400)){
                    ctx.translate(0,pt.y - dragStart.y);
-               //}
+               }
 
            }
        },false);
