@@ -36,6 +36,8 @@ function speechBubble(ctx, text, x, y) {
     ctx.textAlign = 'left';
     ctx.fillStyle = '#000';
     ctx.fillText(text, x, y-6);
+
+    return {width:w*1.1,height:h*0.8};
 }
 
 export {speechBubble}

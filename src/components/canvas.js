@@ -86,7 +86,7 @@ const Canvas = React.memo(({onClick}) => {
                };
                state.updateMessages([message]);
            }
-       },20000000);
+       },2000);
 
        window.requestAnimationFrame(redraw);
 
@@ -100,18 +100,16 @@ const Canvas = React.memo(({onClick}) => {
        trackTransforms(ctx);
 
        function findGondolaAtPosition(clickX,clickY){
-           let users=state.getUsers();
+           let messages=state.getMessages();
 
-           let scaleFactor=Math.max(1,viewHeight);
-           let width_gondola=WIDTH_GONDEL*1/scaleFactor;
-           let height_gondola=HEIGHT_GONDEL*1/scaleFactor;
-           for(let user of users){
-               let x=user.location.x;
-               let y=user.location.y;
-
-               if(clickX>=x-width_gondola/2&&clickX<=x+width_gondola/2 &&clickY>=y-height_gondola/2&&clickY<=y+height_gondola/2){
-                   console.log("user is ",user);
-                   return user;
+           for(let message of messages){
+               let x=message.location.x;
+               let y=message.location.y;
+               let width_textfield=message.dimensions.width;
+               let height_textfield=message.dimensions.height;
+               if(clickX>=x-width_textfield/2&&clickX<=x+width_textfield/2 &&clickY>=y-height_textfield/2&&clickY<=y+height_textfield/2){
+                   console.log("user is ",message.user);
+                   return message.user_id,message.message;
                }
            }
 
@@ -145,7 +143,8 @@ const Canvas = React.memo(({onClick}) => {
                    y=message.user.location.y;
                }
 
-               CHelper.speechBubble(ctx,message.message,x,y);
+               let dimensions=CHelper.speechBubble(ctx,message.message,x,y);
+               message.dimensions=dimensions;
            }
 
             window.requestAnimationFrame(redraw);
