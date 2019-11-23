@@ -29,6 +29,12 @@ class User {
     move() {
         // console.log(`Move user with id ${this.id}`);
         // TODO:
+        const { x, y } = this.location;
+
+        this.location = {
+            x: x + 10,
+            y: y + 10,
+        };
     }
 
     addTimer(timer) {
