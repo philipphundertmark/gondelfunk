@@ -7,8 +7,8 @@ import {find} from "rxjs/operators";
 
 const WIDTH=350;
 const HEIGHT=750;
-const WIDTH_GONDEL=200;
-const HEIGHT_GONDEL=200;
+const WIDTH_GONDEL=100;
+const HEIGHT_GONDEL=100;
 const ZOOM_SPEED=0.3;
 const SCALE_FOR_VISIBLE=0.5;
 const DEFAULT_INTERPOLATION_INTERVAL=100;
@@ -39,9 +39,9 @@ const Canvas = React.memo(({onClick}) => {
 
   function updateData(data){
       if(data.type==="user"){
-        state.updateUsers(data);
+        state.updateUsers(data["data"]);
       }else if(data.type==="message"){
-        state.updateMessages(data);
+        state.updateMessages(data["data"]);
       }
   }
 
@@ -52,7 +52,7 @@ const Canvas = React.memo(({onClick}) => {
   useEffect(() => {
       const subscription = subscribe({
       next: (data) => {
-        // updateData(data);
+         updateData(data);
       }
     });
     return () => {
@@ -189,6 +189,7 @@ const Canvas = React.memo(({onClick}) => {
 
            dragged = false;
        },false);
+
        canvas.addEventListener('mousemove',function(evt){
            if(mouseleft){
                dragged=false;
@@ -213,20 +214,20 @@ const Canvas = React.memo(({onClick}) => {
                    viewTransform.x += pt.x - dragStart.x;
                    viewTransform.y += pt.y - dragStart.y;
                }
+               console.log(viewTransform,viewHeight);
+
           //     console.log(pt.y-dPy*evt.offsetY);
               // console.log(dy,pt.y-dPy*evt.offsetY);
 
-               //if((dy<=0 && pt.y-dPy*evt.offsetY>=0) || (dy>0)){// && pt.y+dPy*(750-evt.offsetY))<=1650){
+              // if((dy<=0 && pt.y-dPy*evt.offsetY>=0)){// && pt.y+dPy*(750-evt.offsetY))<=1650){
                    ctx.translate(0,pt.y - dragStart.y);
-             //  }
-
-
+               //}
 
            }
        },false);
 
-       canvas.addEventListener('mouseleave',function(){
-            console.log("LEFT");
+       canvas.addEventListener('mouseout',function(){
+            mouseleft=true;
        });
 
        canvas.addEventListener('mouseup',function(evt){
@@ -257,6 +258,13 @@ const Canvas = React.memo(({onClick}) => {
            ctx.translate(-pt.x,-pt.y);
        };
 
+       function zoomToFixed(scale){
+           let factor = scale;
+           viewHeight*=factor;
+
+           ctx.scale(factor,factor);
+       }
+
        let handleScroll = function(evt){
            let delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.detail ? -evt.detail : 0;
            if (delta) zoom(delta);
@@ -264,6 +272,9 @@ const Canvas = React.memo(({onClick}) => {
        };
        canvas.addEventListener('DOMMouseScroll',handleScroll,false);
        canvas.addEventListener('mousewheel',handleScroll,false);
+
+       //Initialize view
+       zoomToFixed(0.22);
    }
 
 

@@ -20,7 +20,7 @@ export default class State{
             }else{
                 message.user=this.users[message.user_id];
 
-                let messageForUser=this.getMessageForUser(message.user_id)
+                let messageForUser=this.getMessageForUser(message.user_id);
                 if(messageForUser){
                     delete this.messages[messageForUser.id];
                 }
