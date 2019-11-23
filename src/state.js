@@ -27,7 +27,6 @@ export default class State{
                 }
 
                 this.messages[message.id]=message;
-
             }
         }
     }

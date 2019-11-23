@@ -21,10 +21,10 @@ const ANIMATION_SPEED_LOCATION=1000;
  */
 
 const Canvas = React.memo(() => {
-    console.warn("INIT");
   const { subscribe } = useContext(WebSocketContext);
   const canvasRef = React.createRef();
 
+  const [initialized,setInitialized] = React.useState(false);
   const state=new State(ANIMATION_SPEED_MESSAGE,ANIMATION_SPEED_LOCATION);
   let initialStates=Array.from({length:10},(el,i)=>{
       return {
@@ -60,16 +60,21 @@ const Canvas = React.memo(() => {
 
 
    function initCanvas(canvas){
+       if(initialized){
+           return;
+       }
+       setInitialized(true);
+       console.log("initCanvas");
        let viewHeight=1;
        window.setInterval(()=>{
-           for(let i=0;i<3;i++){
+           for(let i=0;i<40;i++){
                state.updateUsers([{
                    id: _.random(0,10),
                    location: {x: Math.random() * 1000, y: Math.random()*1000}
                }]);
            }
 
-           for(let i=0;i<2;i++){
+           for(let i=0;i<20;i++){
                let rand_text = Math.random().toString(36).substring(7);
                let message={
                    id:_.random(0,10000000),
@@ -96,15 +101,12 @@ const Canvas = React.memo(() => {
            drawBackground(ctx);
 
            for(let user of state.getUsers()){
-               ctx.save();
                let x=user.location.x;
                let y=user.location.y;
                ctx.drawImage(gondelImage,x-WIDTH_GONDEL/2,y-HEIGHT_GONDEL/2,WIDTH_GONDEL,HEIGHT_GONDEL);
-               ctx.restore();
            }
 
            for(let message of state.getMessages()){
-               ctx.save();
                let x,y=null;
                if(message.location){
                     x=message.location.x;
@@ -247,9 +249,9 @@ const Canvas = React.memo(() => {
      ctx.clearRect(0, 0, canvas.width, canvas.height);
      ctx.fillStyle="gray";
      ctx.fillRect(0,0,200,200);
-
+     console.log("CALL");
      initCanvas(canvas);
-  }, [canvasRef, initCanvas]);
+  }, [canvasRef]);
 
   return <canvas className="canvas" ref={canvasRef} />;
 });
