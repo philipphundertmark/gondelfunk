@@ -17,9 +17,6 @@ const DEFAULT_INTERPOLATION_INTERVAL=100;
 const ANIMATION_SPEED_MESSAGE=3000;
 const ANIMATION_SPEED_LOCATION=3000;
 /**TODO
- * click handler for recipient+
- * min max translation and scale
- * receive data from websocket
  * wobbling gondle
  */
 
@@ -28,23 +25,13 @@ const Canvas = React.memo(({onClick}) => {
   const canvasRef = React.createRef();
 
   const [initialized,setInitialized] = React.useState(false);
- // const state=new State(ANIMATION_SPEED_MESSAGE,ANIMATION_SPEED_LOCATION);
-  let initialStates=Array.from({length:1},(el,i)=>{
-      return {
-          id:i,
-          location: {x: Math.random() * 1000, y: Math.random()*1000}
-      }
-  });
-  state.updateUsers(initialStates);
-
-
+ 
   function updateData(data){
       if(data.type==="user"){
         state.updateUsers(data["data"]);
       }else if(data.type==="message"){
         state.updateMessages(data["data"]);
       }
-
   }
 
   function animateAnswer(){
@@ -70,26 +57,6 @@ const Canvas = React.memo(({onClick}) => {
        let viewHeight=1;
        let viewTransform={x:0,y:0};
 
-      /* window.setInterval(()=>{
-          for(let i=0;i<10;i++){
-               state.updateUsers([{
-                   id: _.random(0,10),
-                   location: {x: Math.random() * 100, y: Math.random()*1000}
-               }]);
-           }
-
-          for(let i=0;i<40;i++){
-               let rand_text = Math.random().toString(36).substring(7);
-               let message={
-                   id:_.random(0,10000000),
-                   user_id:_.random(0,9),
-                   message:rand_text,
-                   target_id: Math.random()<0.95 ? null : _.random(0,9)
-               };
-               state.updateMessages([message]);
-           }
-       },2000);
-*/
        window.requestAnimationFrame(redraw);
 
        let backgroundImage=document.getElementById('skikarte');
@@ -142,7 +109,14 @@ const Canvas = React.memo(({onClick}) => {
                let scaleFactor=Math.max(1,viewHeight);
                let width=WIDTH_GONDEL*1/scaleFactor;
                let height=HEIGHT_GONDEL*1/scaleFactor;
+               ctx.save();
+               ctx.translate(canvas.width/2,canvas.height/2);
+
+               // rotate the canvas to the specified degrees
+               //ctx.rotate((Math.random()>0.9?0.1:1)*Math.PI/180);
+
                ctx.drawImage(gondelImage,x-width/2,y-height/2,width,height);
+               ctx.restore();
            }
 
            for(let message of state.getMessages()){

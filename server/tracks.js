@@ -1,4 +1,4 @@
-const SCALING_FACTOR = 4;
+const SCALING_FACTOR = 3.4;
 
 const tracks = [
     {

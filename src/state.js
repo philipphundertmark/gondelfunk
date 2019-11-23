@@ -104,4 +104,4 @@ class State{
     }
 }
 
-export default new State(5000,1000);
+export default new State(5000,1500);
