@@ -7,6 +7,9 @@ import './content.scss';
 import { UserContext } from "../contexts/UserContext";
 import { WebSocketContext } from "../contexts/WebSocketContext";
 
+// Handler to deselect message and stop replying
+let quitReply = null;
+
 const Content = () => {
   const { user, onLogout } = useContext(UserContext);
   const { send } = useContext(WebSocketContext);
@@ -29,10 +32,13 @@ const Content = () => {
     send({
       type: "message", 
       from: user.id,
-      to: null,
-      message
+      message,
+      ...(replyTo && {to: replyTo.to}) 
     });
+
     setMessage("");
+
+    setReplyTo(null);
   }
 
   const handleMessageChange = (event) => {
@@ -52,17 +58,25 @@ const Content = () => {
     send({
       type: "emoji", 
       from: user.id,
-      emoji
+      emoji,
+      ...(replyTo && {to: replyTo.to}) 
     });
+
+    setReplyTo(null);
+  }
+
+  const handleQuitReply = () => {
+    setReplyTo(null);
+    quitReply();
   }
 
   const handleReplyTo = (userId, message, onDeselect) => {
-    console.log(userId, message);
-    
     setReplyTo({
       to: userId,
       message
     })
+
+    quitReply = onDeselect;
   }
 
   return (
@@ -95,7 +109,11 @@ const Content = () => {
           
           <div className="bottom-main">
             {replyTo ? (
-              <div className="reply-to">Reply to: {replyTo.message}</div>
+              <div className="reply-to">
+                <span className="reply-prefix">Reply to:</span>
+                <span className="reply-message">"{replyTo.message}"</span>
+                <span className="close-reply" onClick={handleQuitReply}><FontAwesomeIcon icon={faTimes} /></span>
+              </div>
             ) : null}
             <input placeholder="Funk something" spellCheck={false} value={message} onChange={handleMessageChange} className="message-input" onKeyDown={handleKeyDown}/>
           </div>

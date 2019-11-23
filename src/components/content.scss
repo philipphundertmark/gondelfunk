@@ -95,8 +95,42 @@
                 font-size: 12px;
                 z-index: 1;
                 flex-grow: 0;
-                padding: 4px 8px;
+                padding: 2px 4px;
+                display: flex;
+                align-items: center;
                 margin-bottom: 8px;
+
+                .reply-prefix {
+                    margin-right: 8px;
+                    background-color: lightgrey;
+                    border-radius: 100px;
+                    padding: 1px 4px;
+                    // border: 1px solid grey;
+                }
+
+                .reply-message {
+                    opacity: 0.8;
+                    font-weight: bold;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .close-reply {
+                    padding: 2px;
+                    margin-left: 8px;
+                    cursor: pointer;
+                    width: 16px;
+                    height: 16px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    text-align: center;
+                    border-radius: 100px;
+
+                    &:hover {
+                        background-color: rgba(0,0,0,0.1);
+                    }
+                }
             }
         }
 
