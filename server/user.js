@@ -31,6 +31,11 @@ class User {
         // TODO:
         const { x, y } = this.location;
 
+        // const { start, end } = this.track;
+
+        // const [ x: startX, y: startY] = start;
+        // const [ x: endX, y: endY] = start;
+
         this.location = {
             x: x + 10,
             y: y + 10,
