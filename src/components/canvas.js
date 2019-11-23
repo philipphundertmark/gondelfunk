@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { WebSocketContext } from "../contexts/WebSocketContext";
+import './canvas.scss';
 
 const Canvas = () => {
   const { subscribe } = useContext(WebSocketContext);

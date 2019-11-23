@@ -1,11 +1,13 @@
 import React from 'react';
 import './App.scss';
-import Canvas from './components/canvas';
+import Content from './components/content';
+// import Phone from './components/phone';
 
 function App() {
   return (
-    <div className="App">
-      <Canvas />
+    <div className="app">
+      {/* <Phone /> */}
+      <Content />   
     </div>
   );
 }
