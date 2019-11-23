@@ -55,6 +55,10 @@
             &:hover {
                 background-color: rgb(170, 51, 47);
             }
+
+            &.is-disabled {
+                display: none;
+            }
         }
     }
 }

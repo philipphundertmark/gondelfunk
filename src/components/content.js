@@ -16,9 +16,10 @@ const Content = ({ children }) => {
   }
 
   const sendMessage = () => {
-    /**
-     * TODO: Send message.
-     */
+    console.log("Send message");
+    if (!message) {
+      return;
+    }
     send(message);
     setMessage("");
   }
@@ -32,7 +33,7 @@ const Content = ({ children }) => {
     <div className="app-content">
         <div className="bottom-bar">
           <input spellCheck={false} value={message} onChange={handleMessageChange} className="message-input" onKeyDown={handleKeyDown}/>
-          <div className="send-button" onClick={sendMessage}>
+          <div className={`send-button ${!message ? "is-disabled" : ""}`} onClick={sendMessage}>
             <FontAwesomeIcon icon={faBroadcastTower} />
           </div>
         </div>
