@@ -20,7 +20,7 @@ const ANIMATION_SPEED_LOCATION=1000;
  * click handler for recipient
  */
 
-const Canvas = () => {
+const Canvas = React.memo(() => {
     console.warn("INIT");
   const { subscribe } = useContext(WebSocketContext);
   const canvasRef = React.createRef();
@@ -56,7 +56,7 @@ const Canvas = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [subscribe]);
+  }, [subscribe, updateData]);
 
 
    function initCanvas(canvas){
@@ -249,9 +249,9 @@ const Canvas = () => {
      ctx.fillRect(0,0,200,200);
 
      initCanvas(canvas);
-  }, [canvasRef]);
+  }, [canvasRef, initCanvas]);
 
   return <canvas className="canvas" ref={canvasRef} />;
-};
+});
 
 export default Canvas;
