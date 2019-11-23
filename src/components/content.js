@@ -56,9 +56,9 @@ const Content = () => {
 
   const sendEmoji = (emoji) => {
     send({
-      type: "emoji", 
+      type: "message", 
       from: user.id,
-      emoji,
+      message: emoji,
       ...(replyTo && {to: replyTo.to}) 
     });
 
@@ -96,14 +96,14 @@ const Content = () => {
               <FontAwesomeIcon icon={faLaugh} />
             )}
             <ul className={`emoji-list ${showEmojis ? "is-displayed" : ""}`}>
-              <li onClick={() => sendEmoji("🚠")}><span role="img" aria-label="emoji">🚠</span></li>
-              <li onClick={() => sendEmoji("😎")}><span role="img" aria-label="emoji">😎</span></li>
-              <li onClick={() => sendEmoji("🤩")}><span role="img" aria-label="emoji">🤩</span></li>
-              <li onClick={() => sendEmoji("🥶")}><span role="img" aria-label="emoji">🥶</span></li>
-              <li onClick={() => sendEmoji("🍆")}><span role="img" aria-label="emoji">🍆</span></li>
-              <li onClick={() => sendEmoji("🏔")}><span role="img" aria-label="emoji">🏔</span></li>
-              <li onClick={() => sendEmoji("🍺")}><span role="img" aria-label="emoji">🍺</span></li>
-              <li onClick={() => sendEmoji("💩")}><span role="img" aria-label="emoji">💩</span></li>
+              <li onClick={() => sendEmoji("0x1")}><span role="img" aria-label="emoji">🚠</span></li>
+              <li onClick={() => sendEmoji("0x2")}><span role="img" aria-label="emoji">😎</span></li>
+              <li onClick={() => sendEmoji("0x3")}><span role="img" aria-label="emoji">🤩</span></li>
+              <li onClick={() => sendEmoji("0x4")}><span role="img" aria-label="emoji">🥶</span></li>
+              <li onClick={() => sendEmoji("0x5")}><span role="img" aria-label="emoji">🍆</span></li>
+              <li onClick={() => sendEmoji("0x6")}><span role="img" aria-label="emoji">🏔</span></li>
+              <li onClick={() => sendEmoji("0x7")}><span role="img" aria-label="emoji">🍺</span></li>
+              <li onClick={() => sendEmoji("0x8")}><span role="img" aria-label="emoji">💩</span></li>
             </ul>
           </div>
           

@@ -3,6 +3,7 @@ const express = require('express');
 const http = require("http");
 const uniqid = require("uniqid");
 const api = require('./api');
+const User = require('./user');
 const store = require('./store');
 const ws = require("./websocket");
 
@@ -37,14 +38,27 @@ setInterval(() => {
   
   const userId = uniqid("user-");
 
-  const user = {
+  const user = new User(
+    // id
     userId,
-    age: Math.floor(Math.random() * (50 - 18 + 1)) + 18,
-    gender: Math.random() < 0.5 ? "venus" : "mars",
-    track: Math.floor(Math.random() * 4)
-  };
-  
-  console.log(user);
+    // id
+    Math.floor(Math.random() * (50 - 18 + 1)) + 18,
+    // gender
+    Math.random() < 0.5 ? "venus" : "mars",
+    // track
+    Math.floor(Math.random() * 3)
+  );
+
+  const timer = setInterval(() => {
+    user.move();
+    
+    ws.broadcast({
+      type: "location",
+      id: user.id
+    })
+  }, 1000);
+
+  user.addTimer(timer);
 
 }, 2000)
 
