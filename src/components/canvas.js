@@ -3,6 +3,7 @@ import { WebSocketContext } from "../contexts/WebSocketContext";
 import State from '../state';
 import * as CHelper from '../canvas-helper';
 import _ from 'lodash';
+import {find} from "rxjs/operators";
 
 const WIDTH=350;
 const HEIGHT=750;
@@ -20,7 +21,7 @@ const ANIMATION_SPEED_LOCATION=1000;
  * wobbling gondle
  */
 
-const Canvas = React.memo(() => {
+const Canvas = React.memo(({onClick}) => {
   const { subscribe } = useContext(WebSocketContext);
   const canvasRef = React.createRef();
 
@@ -57,7 +58,6 @@ const Canvas = React.memo(() => {
       subscription.unsubscribe();
     };
   }, [subscribe, updateData]);
-
 
    function initCanvas(canvas){
        if(initialized){
@@ -96,12 +96,32 @@ const Canvas = React.memo(() => {
        canvas.width = WIDTH;
        canvas.height = HEIGHT;
 
-       var ctx = canvas.getContext('2d');
+       let ctx = canvas.getContext('2d');
        trackTransforms(ctx);
 
+       function findGondolaAtPosition(clickX,clickY){
+           let users=state.getUsers();
+
+           let scaleFactor=Math.max(1,viewHeight);
+           let width_gondola=WIDTH_GONDEL*1/scaleFactor;
+           let height_gondola=HEIGHT_GONDEL*1/scaleFactor;
+           for(let user of users){
+               let x=user.location.x;
+               let y=user.location.y;
+
+               if(clickX>=x-width_gondola/2&&clickX<=x+width_gondola/2 &&clickY>=y-height_gondola/2&&clickY<=y+height_gondola/2){
+                   console.log("user is ",user);
+                   return user;
+               }
+           }
+
+           console.log("no user");
+           return null;
+       }
+
        function redraw(){
-           var p1 = ctx.transformedPoint(0,0);
-           var p2 = ctx.transformedPoint(canvas.width,canvas.height);
+           let p1 = ctx.transformedPoint(0,0);
+           let p2 = ctx.transformedPoint(canvas.width,canvas.height);
            ctx.clearRect(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
            drawBackground(ctx);
            ctx.save();
@@ -138,15 +158,15 @@ const Canvas = React.memo(() => {
 
        //redraw();
 
-       var lastX=canvas.width/2, lastY=canvas.height/2;
-       var dragStart,dragged;
+       let lastX=canvas.width/2, lastY=canvas.height/2;
+       let dragStart,dragged;
        canvas.addEventListener('mousedown',function(evt){
            document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
            lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
            lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
 
-           console.log("coordinates2",lastX,lastY);
            dragStart = ctx.transformedPoint(lastX,lastY);
+
            dragged = false;
        },false);
        canvas.addEventListener('mousemove',function(evt){
@@ -155,43 +175,43 @@ const Canvas = React.memo(() => {
 
            dragged = true;
            if (dragStart){
-               var pt = ctx.transformedPoint(lastX,lastY);
+               let pt = ctx.transformedPoint(lastX,lastY);
                viewTransform.x+=pt.x-dragStart.x;
                viewTransform.y+=pt.y-dragStart.y;
-               /*
-               console.log(viewHeight);
-               console.log(viewTransform.x,viewTransform.y);
-               */
+
                ctx.translate(pt.x-dragStart.x,pt.y-dragStart.y);
            }
        },false);
        canvas.addEventListener('mouseup',function(evt){
            dragStart = null;
-           if (!dragged) zoom(evt.shiftKey ? -1 : 1 );
+           if (!dragged) {
+               let pt = ctx.transformedPoint(lastX,lastY);
+               let gondola=findGondolaAtPosition(pt.x,pt.y);
+               if(gondola){
+                   onClick(gondola.user_id,gondola.message);
+               }
+           }
        },false);
 
-       var scaleFactor = 1.2;
-       var zoom = function(clicks){
-           var pt = ctx.transformedPoint(lastX,lastY);
+       let scaleFactor = 1.2;
+       let zoom = function(clicks){
+           let pt = ctx.transformedPoint(lastX,lastY);
 
            let zoomSpeed=Math.min(ZOOM_SPEED,Math.max(-ZOOM_SPEED,clicks));
-           var factor = Math.pow(scaleFactor,zoomSpeed);
+           let factor = Math.pow(scaleFactor,zoomSpeed);
            if(viewHeight*factor<0.25|| viewHeight*factor>1.5){
                return;
            }
-           console.log(pt);
-          ctx.translate(pt.x,pt.y);
+
+           ctx.translate(pt.x,pt.y);
            viewHeight*=factor;
 
-           /*viewTransform.x+=-pt.x;
-           viewTransform.y+=-pt.y;*/
-           //console.log(viewTransform,viewHeight);
            ctx.scale(factor,factor);
            ctx.translate(-pt.x,-pt.y);
        };
 
-       var handleScroll = function(evt){
-           var delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.detail ? -evt.detail : 0;
+       let handleScroll = function(evt){
+           let delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.detail ? -evt.detail : 0;
            if (delta) zoom(delta);
            return evt.preventDefault() && false;
        };
@@ -203,45 +223,45 @@ const Canvas = React.memo(() => {
     // Adds ctx.getTransform() - returns an SVGMatrix
     // Adds ctx.transformedPoint(x,y) - returns an SVGPoint
     function trackTransforms(ctx){
-        var svg = document.createElementNS("http://www.w3.org/2000/svg",'svg');
-        var xform = svg.createSVGMatrix();
+        let svg = document.createElementNS("http://www.w3.org/2000/svg",'svg');
+        let xform = svg.createSVGMatrix();
         ctx.getTransform = function(){ return xform; };
 
-        var savedTransforms = [];
-        var save = ctx.save;
+        let savedTransforms = [];
+        let save = ctx.save;
         ctx.save = function(){
             savedTransforms.push(xform.translate(0,0));
             return save.call(ctx);
         };
-        var restore = ctx.restore;
+        let restore = ctx.restore;
         ctx.restore = function(){
             xform = savedTransforms.pop();
             return restore.call(ctx);
         };
 
-        var scale = ctx.scale;
+        let scale = ctx.scale;
         ctx.scale = function(sx,sy){
             xform = xform.scaleNonUniform(sx,sy);
             return scale.call(ctx,sx,sy);
         };
-        var rotate = ctx.rotate;
+        let rotate = ctx.rotate;
         ctx.rotate = function(radians){
             xform = xform.rotate(radians*180/Math.PI);
             return rotate.call(ctx,radians);
         };
-        var translate = ctx.translate;
+        let translate = ctx.translate;
         ctx.translate = function(dx,dy){
             xform = xform.translate(dx,dy);
             return translate.call(ctx,dx,dy);
         };
-        var transform = ctx.transform;
+        let transform = ctx.transform;
         ctx.transform = function(a,b,c,d,e,f){
-            var m2 = svg.createSVGMatrix();
+            let m2 = svg.createSVGMatrix();
             m2.a=a; m2.b=b; m2.c=c; m2.d=d; m2.e=e; m2.f=f;
             xform = xform.multiply(m2);
             return transform.call(ctx,a,b,c,d,e,f);
         };
-        var setTransform = ctx.setTransform;
+        let setTransform = ctx.setTransform;
         ctx.setTransform = function(a,b,c,d,e,f){
             xform.a = a;
             xform.b = b;
@@ -251,7 +271,7 @@ const Canvas = React.memo(() => {
             xform.f = f;
             return setTransform.call(ctx,a,b,c,d,e,f);
         };
-        var pt  = svg.createSVGPoint();
+        let pt  = svg.createSVGPoint();
         ctx.transformedPoint = function(x,y){
             pt.x=x; pt.y=y;
             return pt.matrixTransform(xform.inverse());
