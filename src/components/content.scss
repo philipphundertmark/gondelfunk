@@ -67,19 +67,37 @@
         left: 16px;
         right: 16px;
         display: flex;
-        align-items: center;
+        align-items: flex-end;
 
-        .message-input {
-            font-size: 14px;
-            border: none;
-            padding: 8px 16px;
-            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.3);
-            bottom: 16px;
-            z-index: 1;
-            outline: none;
-            border-radius: 100px;
+        .bottom-main {
+            display: flex;
             flex-grow: 1;
-            background-color: white;
+            flex-direction: column;
+
+            .message-input {
+                font-size: 14px;
+                border: none;
+                padding: 8px 16px;
+                box-shadow: 0 2px 4px 0 rgba(0,0,0,0.3);
+                bottom: 16px;
+                z-index: 1;
+                outline: none;
+                border-radius: 100px;
+                flex-grow: 1;
+                background-color: white;
+            }
+
+            .reply-to {
+                align-self: start;
+                box-shadow: 0 2px 4px 0 rgba(0,0,0,0.3);
+                background-color: white;
+                border-radius: 100px;
+                font-size: 12px;
+                z-index: 1;
+                flex-grow: 0;
+                padding: 4px 8px;
+                margin-bottom: 8px;
+            }
         }
 
         .emoji-button {

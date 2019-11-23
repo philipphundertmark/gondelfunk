@@ -10,6 +10,7 @@ import { WebSocketContext } from "../contexts/WebSocketContext";
 const Content = () => {
   const { user, onLogout } = useContext(UserContext);
   const { send } = useContext(WebSocketContext);
+  const [replyTo, setReplyTo] = useState(null);
   const [message, setMessage] = useState("");
   const [showEmojis, setShowEmojis] = useState(false);
 
@@ -55,6 +56,15 @@ const Content = () => {
     });
   }
 
+  const handleReplyTo = (userId, message, onDeselect) => {
+    console.log(userId, message);
+    
+    setReplyTo({
+      to: userId,
+      message
+    })
+  }
+
   return (
     <div className="app-content">
         <div className="top-bar">
@@ -82,13 +92,19 @@ const Content = () => {
               <li onClick={() => sendEmoji("💩")}><span role="img" aria-label="emoji">💩</span></li>
             </ul>
           </div>
-          <input placeholder="Funk something" spellCheck={false} value={message} onChange={handleMessageChange} className="message-input" onKeyDown={handleKeyDown}/>
+          
+          <div className="bottom-main">
+            {replyTo ? (
+              <div className="reply-to">Reply to: {replyTo.message}</div>
+            ) : null}
+            <input placeholder="Funk something" spellCheck={false} value={message} onChange={handleMessageChange} className="message-input" onKeyDown={handleKeyDown}/>
+          </div>
           <div className={`send-button ${!message ? "is-disabled" : ""}`} onClick={sendMessage}>
             <FontAwesomeIcon icon={faBroadcastTower} />
           </div>
         </div>
 
-        <Canvas onClick={() => console.log("Works")} />
+        <Canvas onClick={handleReplyTo} />
     </div>
   );
 };
