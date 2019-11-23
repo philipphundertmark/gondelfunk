@@ -1,7 +1,7 @@
 import TWEEN from "@tweenjs/tween.js";
 import _ from 'lodash';
 
-export default class State{
+class State{
     constructor(animationSpeedMessage,animationSpeedLocation){
         this.animationSpeedMessage=animationSpeedMessage;
         this.animationSpeedLoaction=animationSpeedLocation;
@@ -10,6 +10,7 @@ export default class State{
 
         this._lastTick=0;
         requestAnimationFrame((time)=>this._animate(time));
+        this.hash=Math.random()*10000;
     }
 
     updateMessages(data){
@@ -102,3 +103,5 @@ export default class State{
 
     }
 }
+
+export default new State(5000,1000);
