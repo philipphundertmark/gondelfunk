@@ -1,5 +1,64 @@
 .app-content {
+    position: relative;
     // padding: 24px;
     width: 350px;
     height: 750px;
+
+    &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        height: 96px;
+        background: rgb(0,0,0);
+        background: linear-gradient(0deg, rgba(38, 52, 70, 0.5) 0%, rgba(0,0,0,0) 100%);
+    }
+
+    .bottom-bar {
+        position: absolute;
+        bottom: 16px;
+        left: 16px;
+        right: 16px;
+        display: flex;
+        align-items: center;
+
+        .message-input {
+            font-size: 14px;
+            border: none;
+            padding: 8px 16px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.3);
+            bottom: 16px;
+            z-index: 1;
+            outline: none;
+            border-radius: 100px;
+            flex-grow: 1;
+            background-color: white
+        }
+
+        .send-button {
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.3);
+            margin-left: 8px;
+            height: 33px;
+            width: 33px;
+            display: flex;
+            font-size: 15px;
+            color: white;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            background-color: rgb(206, 68, 64);
+            border: none;
+            border-radius: 50%;
+
+            &:hover {
+                background-color: rgb(170, 51, 47);
+            }
+
+            &.is-disabled {
+                display: none;
+            }
+        }
+    }
 }

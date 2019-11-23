@@ -17,4 +17,8 @@
     &:not(:last-child) {
         margin-right: 16px;
     }
+
+    &.is-selected {
+        box-shadow: inset 0 0 0 2px white;
+    }
 }
