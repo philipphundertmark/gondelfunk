@@ -51,14 +51,11 @@ setInterval(() => {
 
   const timer = setInterval(() => {
     user.move();
-    
-    ws.broadcast({
-      type: "location",
-      id: user.id
-    })
   }, 1000);
 
   user.addTimer(timer);
+
+  store.addUser(user);
 
 }, 2000)
 

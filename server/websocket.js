@@ -13,6 +13,7 @@ class WebSocket {
   }
 
   broadcast(data) {
+    console.log(data);
     if (!this.wss) {
       throw new Error("WebSocketServer not initialized");
     }
