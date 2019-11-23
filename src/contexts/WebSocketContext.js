@@ -28,6 +28,9 @@ const WebSocketProvider = ({ children }) => {
     ws.onclose = () => {
       setConnected(false);
     };
+    ws.onerror = (event) => {
+      console.error("WebSocket error observed:", event);
+    };
     return () => {
       ws.close();
     };

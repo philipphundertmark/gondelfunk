@@ -1,0 +1,20 @@
+.sex-button {
+    border-radius: 50%;
+    height: 24px;
+    width: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    font-size: 32px;
+    background-color: rgb(187, 58, 53);
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgb(170, 51, 47);
+    }
+
+    &:not(:last-child) {
+        margin-right: 16px;
+    }
+}
