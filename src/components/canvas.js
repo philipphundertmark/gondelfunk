@@ -254,7 +254,7 @@ const Canvas = React.memo(() => {
      ctx.fillRect(0,0,200,200);
      console.log("CALL");
      initCanvas(canvas);
-  }, [canvasRef]);
+  }, [canvasRef, initCanvas]);
 
   return <canvas className="canvas" ref={canvasRef} />;
 });

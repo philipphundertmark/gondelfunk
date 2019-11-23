@@ -15,7 +15,7 @@
         background: linear-gradient(0deg, rgba(38, 52, 70, 0.5) 0%, rgba(0,0,0,0) 100%);
     }
 
-    .top-bar {
+    .top-bar {
         position: absolute;
         top: 16px;
         left: 16px;
@@ -25,7 +25,39 @@
         align-items: center;
 
         h3 {
+            border-radius: 100px;
+            margin-left: 33px;
+            color: rgb(206, 68, 64);
             text-align: center;
+            flex-grow: 1;
+            padding: 6px 16px;
+            background-color: white;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.3);
+        }
+
+        .logout {
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.3);
+            margin-left: 8px;
+            height: 33px;
+            width: 33px;
+            display: flex;
+            font-size: 15px;
+            color: rgb(206, 68, 64);
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            background-color: white;
+            border: none;
+            border-radius: 50%;
+
+            &:hover {
+                background-color: rgb(170, 51, 47);
+            }
+
+            &.is-disabled {
+                display: none;
+            }
         }
     }
 
@@ -47,7 +79,7 @@
             outline: none;
             border-radius: 100px;
             flex-grow: 1;
-            background-color: white
+            background-color: white;
         }
 
         .send-button {

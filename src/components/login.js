@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
+import { withRouter } from "react-router";
+import uniqid from 'uniqid';
 import './login.scss';
 import Sex from './sex';
 import gondel from "../assets/gondel.svg";
-import { withRouter } from "react-router";
 import { UserContext } from "../contexts/UserContext";
 
 const Login = ({ history }) => {
@@ -29,6 +30,7 @@ const Login = ({ history }) => {
     }
 
     onLogin({
+      id: uniqid("user-"),
       age,
       gender
     });
@@ -42,16 +44,25 @@ const Login = ({ history }) => {
 
   return (
     <div className="app-login">
-      <h1 style={{marginBottom: 16}}>Gondelfunk</h1>
-      <img src={gondel} alt="gondel" width={80} style={{marginBottom: 64}}/>
-      <h3 style={{marginTop: 0}}>Choose your sex</h3>
+      <h1 style={{marginBottom: 16}}>
+        Gondelfunk
+      </h1>
+
+      <img src={gondel} alt="gondel" width={80} style={{marginBottom: 64}} />
+
+      <h3 style={{marginTop: 0}}>
+        Choose your sex
+      </h3>
+
       <div className="sex-chooser">
         <Sex gender="mars" selected={gender === "mars"} onClick={() => setGender("mars")} />
         <Sex gender="venus" selected={gender === "venus"} onClick={() => setGender("venus")}/>
       </div>
+
       <h3 style={{marginTop: 32}}>
         We need your age
       </h3>
+
       <input type="number" className="age-input" value={age} onChange={handleAgeChange} />
 
       <button style={{ marginTop: 64, marginBottom: 64 }} onClick={handleLogin} className="login-button">
