@@ -7,9 +7,10 @@ import {find} from "rxjs/operators";
 
 const WIDTH=350;
 const HEIGHT=750;
-const WIDTH_GONDEL=100;
-const HEIGHT_GONDEL=100;
-const ZOOM_SPEED=0.2;
+const WIDTH_GONDEL=200;
+const HEIGHT_GONDEL=200;
+const ZOOM_SPEED=0.3;
+const SCALE_FOR_VISIBLE=0.5;
 const DEFAULT_INTERPOLATION_INTERVAL=100;
 
 const ANIMATION_SPEED_MESSAGE=3000;
@@ -85,7 +86,7 @@ const Canvas = React.memo(({onClick}) => {
                };
                state.updateMessages([message]);
            }
-       },1000);
+       },2000);
 
        window.requestAnimationFrame(redraw);
 
@@ -102,7 +103,7 @@ const Canvas = React.memo(({onClick}) => {
            let messages=state.getMessages();
 
            for(let message of messages){
-               if(message.target_id || !message.user.location){
+               if(message.target_id || !message.user.location || !message.dimensions){
                    continue;
                }
                let x=message.user.location.x;
@@ -152,23 +153,34 @@ const Canvas = React.memo(({onClick}) => {
                    y=message.user.location.y;
                }
 
-               let dimensions=CHelper.speechBubble(ctx,message.message,x,y,message.selected);
-               message.dimensions=dimensions;
+               if(viewHeight>0.35) {
+
+                   if(message.message.startsWith("0x")){
+                       let code=message.message.substr(2,1);
+                       CHelper.emoticonBubble(ctx, code, x, y);
+                   }else {
+                       let dimensions = CHelper.speechBubble(ctx, message.message, x, y, message.selected, message.attention);
+                       message.dimensions = dimensions;
+
+                   }
+               }
            }
-
             window.requestAnimationFrame(redraw);
-
        }
 
        function drawBackground(ctx){
-           ctx.drawImage(backgroundImage,0,0,1651,3000);
+           ctx.fillStyle="#fff";
+           ctx.fillRect(-500,-500,3000,7000);
+           ctx.drawImage(backgroundImage,0,0,1600,3400);
        }
 
        //redraw();
 
        let lastX=canvas.width/2, lastY=canvas.height/2;
        let dragStart,dragged;
+       let mouseleft=false;
        canvas.addEventListener('mousedown',function(evt){
+           mouseleft=false;
            document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
            lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
            lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
@@ -178,23 +190,47 @@ const Canvas = React.memo(({onClick}) => {
            dragged = false;
        },false);
        canvas.addEventListener('mousemove',function(evt){
+           if(mouseleft){
+               dragged=false;
+               return;
+           }
            lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
            lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
 
            dragged = true;
            if (dragStart){
                let pt = ctx.transformedPoint(lastX,lastY);
-               viewTransform.x+=pt.x-dragStart.x;
-               viewTransform.y+=pt.y-dragStart.y;
+               let pt2x=ctx.transformedPoint(lastX+1,lastY);
+               let pt2y=ctx.transformedPoint(lastX,lastY+1);
+               let dPx=pt2x.x-pt.x;
+               let dPy=pt2y.y-pt.y;
 
-               ctx.translate(pt.x-dragStart.x,pt.y-dragStart.y);
+               let dx=pt.x-dragStart.x;
+               let dy=pt.y-dragStart.y;
+             //  console.log(evt.offsetX,pt.x,dPx,pt.x+dPx*(350-evt.offsetX));
+               if((dx>=0 && pt.x-dPx*evt.offsetX>0) || (dx<=0 && pt.x+dPx*(350-evt.offsetX)<1650)) {
+                   ctx.translate(pt.x - dragStart.x, 0);
+                   viewTransform.x += pt.x - dragStart.x;
+                   viewTransform.y += pt.y - dragStart.y;
+               }
+          //     console.log(pt.y-dPy*evt.offsetY);
+              // console.log(dy,pt.y-dPy*evt.offsetY);
+
+               //if((dy<=0 && pt.y-dPy*evt.offsetY>=0) || (dy>0)){// && pt.y+dPy*(750-evt.offsetY))<=1650){
+                   ctx.translate(0,pt.y - dragStart.y);
+             //  }
+
+
+
            }
        },false);
+
+       canvas.addEventListener('mouseleave',function(){
+            console.log("LEFT");
+       });
+
        canvas.addEventListener('mouseup',function(evt){
            dragStart = null;
-           if (!dragged) {
-
-           }
 
            let pt = ctx.transformedPoint(lastX,lastY);
            let message=findMessageAtPosition(pt.x,pt.y);
@@ -210,7 +246,7 @@ const Canvas = React.memo(({onClick}) => {
 
            let zoomSpeed=Math.min(ZOOM_SPEED,Math.max(-ZOOM_SPEED,clicks));
            let factor = Math.pow(scaleFactor,zoomSpeed);
-           if(viewHeight*factor<0.25|| viewHeight*factor>1.5){
+           if(viewHeight*factor<0.2|| viewHeight*factor>1.5){
                return;
            }
 
