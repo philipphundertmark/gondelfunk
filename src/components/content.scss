@@ -82,6 +82,67 @@
             background-color: white;
         }
 
+        .emoji-button {
+            position: relative;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.3);
+            margin-right: 8px;
+            height: 33px;
+            width: 33px;
+            display: flex;
+            font-size: 15px;
+            color: grey;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            background-color: white;
+            border: none;
+            border-radius: 50%;
+
+            &:hover {
+                background-color: rgb(236, 236, 236);
+            }
+
+            .emoji-list {
+                position: absolute;
+                list-style: none;
+                background-color: white;
+                box-shadow: 0 2px 4px 0 rgba(0,0,0,0.3);
+                display: none;
+                margin: 0;
+                padding: 0;
+                left: 0;
+                bottom: 41px;
+                width: 33px;
+                border-radius: 100px;
+                z-index: 1;
+
+                &.is-displayed {
+                    display: block;
+                }
+
+                li {
+                    width: 33px;
+                    height: 33px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    font-size: 18px;
+                    display: flex;
+                    align-items: center;
+
+                    &:hover {
+                        background-color: rgba(0,0,0,0.1);
+                    }
+
+                    span {
+                        display: block;
+                        margin-top: 1px;
+                        margin-left: 7px;
+                    }
+                }
+            }
+        }
+
         .send-button {
             box-shadow: 0 2px 4px 0 rgba(0,0,0,0.3);
             margin-left: 8px;

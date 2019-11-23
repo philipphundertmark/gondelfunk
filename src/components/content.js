@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBroadcastTower, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBroadcastTower, faSignOutAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faLaugh } from '@fortawesome/free-regular-svg-icons';
 import Canvas from "./canvas";
 import './content.scss';
 import { UserContext } from "../contexts/UserContext";
@@ -10,6 +11,7 @@ const Content = () => {
   const { user, onLogout } = useContext(UserContext);
   const { send } = useContext(WebSocketContext);
   const [message, setMessage] = useState("");
+  const [showEmojis, setShowEmojis] = useState(false);
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -41,6 +43,18 @@ const Content = () => {
     onLogout();
   }
 
+  const toggleEmojis = () => {
+    setShowEmojis(value => !value);
+  }
+
+  const sendEmoji = (emoji) => {
+    send({
+      type: "emoji", 
+      from: user.id,
+      emoji
+    });
+  }
+
   return (
     <div className="app-content">
         <div className="top-bar">
@@ -51,7 +65,20 @@ const Content = () => {
         </div>
 
         <div className="bottom-bar">
-          <input spellCheck={false} value={message} onChange={handleMessageChange} className="message-input" onKeyDown={handleKeyDown}/>
+          <div className="emoji-button" onClick={toggleEmojis}>
+            {showEmojis ? (
+              <FontAwesomeIcon icon={faTimes} />
+            ) : (
+              <FontAwesomeIcon icon={faLaugh} />
+            )}
+            <ul className={`emoji-list ${showEmojis ? "is-displayed" : ""}`}>
+              <li onClick={() => sendEmoji("😎")}><span role="img" aria-label="emoji">😎</span></li>
+              <li onClick={() => sendEmoji("🥶")}><span role="img" aria-label="emoji">🥶</span></li>
+              <li onClick={() => sendEmoji("💩")}><span role="img" aria-label="emoji">💩</span></li>
+              <li onClick={() => sendEmoji("🍆")}><span role="img" aria-label="emoji">🍆</span></li>
+            </ul>
+          </div>
+          <input placeholder="Funk something" spellCheck={false} value={message} onChange={handleMessageChange} className="message-input" onKeyDown={handleKeyDown}/>
           <div className={`send-button ${!message ? "is-disabled" : ""}`} onClick={sendMessage}>
             <FontAwesomeIcon icon={faBroadcastTower} />
           </div>
