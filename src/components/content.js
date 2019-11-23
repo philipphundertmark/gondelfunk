@@ -50,6 +50,7 @@ const Content = () => {
   const sendEmoji = (emoji) => {
     send({
       type: "emoji", 
+      from: user.id,
       emoji
     });
   }
