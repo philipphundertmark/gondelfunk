@@ -1,9 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
+import { WebSocketContext } from "../contexts/WebSocketContext";
 
-const Canvas = ({data}) => {
+const Canvas = () => {
+  const { subscribe } = useContext(WebSocketContext);
   const canvasRef = React.createRef();
 
-  console.log(data);
+  useEffect(() => {
+    const subscription = subscribe({
+      next: (message) => {
+        console.log(message);
+        // setMessages(messages => [...messages, message]);
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [subscribe]);
 
   useEffect(() => {
     const { current: canvas } = canvasRef;

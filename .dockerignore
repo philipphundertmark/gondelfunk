@@ -1,0 +1,9 @@
+**/*.log
+.dockerignore
+.eslintrc.json
+.git
+.gitignore
+docker
+Dockerfile
+node_modules
+README.md

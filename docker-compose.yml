@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+  redis:
+    container_name: gondelfunk_redis
+    image: redis:latest
+    networks: 
+      - backend
+    ports:
+      - "6379:6379"
+    restart: always
+  server:
+    build: .
+    command: ["npm", "run", "develop"]
+    container_name: gondelfunk_server
+    depends_on:
+      - redis
+    environment:
+      PORT: "8000"
+    image: gondelfunk_server
+    networks: 
+      - backend
+    ports:
+      - "8000:8000"
+    restart: always
+    volumes:
+       - ./server:/gondelfunk/server
+
+networks:
+  backend:
+    name: gondelfunk_network
+
+volumes:
+  data:
+    name: gondelfunk_data

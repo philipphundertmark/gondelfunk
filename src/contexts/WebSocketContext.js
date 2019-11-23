@@ -20,6 +20,7 @@ const WebSocketProvider = ({ children }) => {
     ws.onopen = () => {
       setConnected(true);
     };
+    // Important!!!
     ws.onmessage = ({ data: msg }) => {
       const { data } = JSON.parse(msg);
       subject.next(data);
