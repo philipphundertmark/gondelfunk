@@ -1,17 +1,25 @@
+const tracks = require('./tracks');
+
+console.log(tracks);
+
 class User {
     constructor(id, age, gender, track) {
         this.id = id;
         this.age = age;
         this.gender = gender;
-        this.track = track;
+        this.trackId = track;
+
+        this.track = tracks[track];
+
+        this.location = [this.track.start, this.track.end];
     }
 
-    get(key) {
-        return this.users[key];
+    move() {
+        console.log(`Move user with id ${this.id}`);
     }
 
-    set(key, value) {
-        this.users[key] = value;
+    addTimer(timer) {
+        this.timer = timer;
     }
 }
 
