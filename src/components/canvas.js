@@ -4,8 +4,8 @@ import State from '../state';
 import * as CHelper from '../canvas-helper';
 import _ from 'lodash';
 
-const WIDTH=700;
-const HEIGHT=1000;
+const WIDTH=350;
+const HEIGHT=750;
 const WIDTH_GONDEL=100;
 const HEIGHT_GONDEL=100;
 const ZOOM_SPEED=0.2;
@@ -86,7 +86,7 @@ const Canvas = React.memo(() => {
                };
                state.updateMessages([message]);
            }
-       },1000000000);
+       },2000);
 
        window.requestAnimationFrame(redraw);
 
@@ -151,14 +151,15 @@ const Canvas = React.memo(() => {
            lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
            lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
 
-           console.log(lastX,lastY);
-           console.log(lastX)
+          // console.log(lastX,lastY);
+
            dragged = true;
            if (dragStart){
                var pt = ctx.transformedPoint(lastX,lastY);
                viewTransform.x+=pt.x-dragStart.x;
                viewTransform.y+=pt.y-dragStart.y;
-               console.log(viewTransform,viewHeight);
+
+
                ctx.translate(pt.x-dragStart.x,pt.y-dragStart.y);
                //redraw();
            }
