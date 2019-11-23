@@ -7,6 +7,7 @@ function speechBubble(ctx, text, x, y,highlighted) {
     ctx.beginPath();
     ctx.strokeStyle="black";
     ctx.lineWidth="1";
+    ctx.font = "16px Rubik";
     if(highlighted) {
         ctx.fillStyle = "rgba(255, 100, 100, 0.8)";
     }else{

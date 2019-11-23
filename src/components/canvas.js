@@ -67,25 +67,15 @@ const Canvas = React.memo(({onClick}) => {
        let viewHeight=1;
        let viewTransform={x:0,y:0};
 
-       for(let i=0;i<5;i++){
-           let rand_text = Math.random().toString(36).substring(7);
-           let message={
-               id:_.random(0,10000000),
-               user_id:_.random(0,9),
-               message:rand_text,
-               target_id: Math.random()<0.95 ? null : _.random(0,9)
-           };
-           state.updateMessages([message]);
-       }
        window.setInterval(()=>{
-          /* for(let i=0;i<40;i++){
+          for(let i=0;i<10;i++){
                state.updateUsers([{
                    id: _.random(0,10),
-                   location: {x: Math.random() * 1000, y: Math.random()*1000}
+                   location: {x: Math.random() * 100, y: Math.random()*1000}
                }]);
-           }*/
+           }
 
-           for(let i=0;i<20;i++){
+           for(let i=0;i<40;i++){
                let rand_text = Math.random().toString(36).substring(7);
                let message={
                    id:_.random(0,10000000),
@@ -95,7 +85,7 @@ const Canvas = React.memo(({onClick}) => {
                };
                state.updateMessages([message]);
            }
-       },10000000000);
+       },1000);
 
        window.requestAnimationFrame(redraw);
 
@@ -132,6 +122,7 @@ const Canvas = React.memo(({onClick}) => {
        }
 
        function onSelectMessage(message){
+           state.getMessages().forEach(message=>message.selected=false);
            message.selected=true;
        }
 
@@ -202,12 +193,14 @@ const Canvas = React.memo(({onClick}) => {
        canvas.addEventListener('mouseup',function(evt){
            dragStart = null;
            if (!dragged) {
-               let pt = ctx.transformedPoint(lastX,lastY);
-               let message=findMessageAtPosition(pt.x,pt.y);
-               if(message){
-                   onSelectMessage(message);
-                   onClick(message.user_id,message.message,()=>onDeselectMessage(message));
-               }
+
+           }
+
+           let pt = ctx.transformedPoint(lastX,lastY);
+           let message=findMessageAtPosition(pt.x,pt.y);
+           if(message){
+               onSelectMessage(message);
+               onClick(message.user_id,message.message,()=>onDeselectMessage(message));
            }
        },false);
 
