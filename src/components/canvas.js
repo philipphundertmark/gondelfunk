@@ -50,7 +50,7 @@ const Canvas = React.memo(() => {
   useEffect(() => {
       const subscription = subscribe({
       next: (data) => {
-        updateData(data);
+        // updateData(data);
       }
     });
     return () => {

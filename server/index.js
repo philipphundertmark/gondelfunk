@@ -25,10 +25,6 @@ const server = http.createServer(app);
 
 ws.init(server);
 
-setInterval(() => {
-  ws.broadcast("Test");
-}, 5000);
-
 (async function() {
   /**
    * TODO: Connect to redis here

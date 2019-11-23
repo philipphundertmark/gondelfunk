@@ -22,8 +22,11 @@ const Content = () => {
     if (!message) {
       return;
     }
+
     send({
-      userId: user.id,
+      type: "message", 
+      from: user.id,
+      to: null,
       message
     });
     setMessage("");

@@ -7,6 +7,7 @@ class WebSocket {
     this.wss.on('connection', (ws) => {
       ws.on('message', (message) => {
         console.log('received: %s', message);
+        this.broadcast(message);
       });
     });
   }
@@ -17,7 +18,7 @@ class WebSocket {
     }
     this.wss.clients.forEach(client => {
       if (client.readyState === WS.OPEN) {
-        client.send(JSON.stringify({ data }));
+        client.send(data);
       }
     });
   }
