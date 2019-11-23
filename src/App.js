@@ -9,6 +9,7 @@ import Content from './components/content';
 import Login from './components/login';
 // import Phone from './components/phone';
 import './App.scss';
+import PrivateRoute from './components/privateroute';
 
 function App() {
   return (
@@ -21,9 +22,7 @@ function App() {
             <Route path="/login">
               <Login />
             </Route>
-            <Route path="/app">
-              <Content /> 
-            </Route>
+            <PrivateRoute path="/app" component={Content} />
             <Redirect to="/app" />
           </Switch>
         </div>

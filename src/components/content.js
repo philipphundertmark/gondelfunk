@@ -1,11 +1,13 @@
 import React, { useContext, useState } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBroadcastTower, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import Canvas from "./canvas";
 import './content.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBroadcastTower } from '@fortawesome/free-solid-svg-icons';
+import { UserContext } from "../contexts/UserContext";
 import { WebSocketContext } from "../contexts/WebSocketContext";
 
-const Content = ({ children }) => {
+const Content = () => {
+  const { onLogout } = useContext(UserContext);
   const { send } = useContext(WebSocketContext);
   const [message, setMessage] = useState("");
 
@@ -29,10 +31,17 @@ const Content = ({ children }) => {
     setMessage(value);
   }
 
+  const handleLogout = () => {
+    onLogout();
+  }
+
   return (
     <div className="app-content">
         <div className="top-bar">
           <h3>Gondelfunk</h3>
+          <div className="logout" onClick={handleLogout}>
+            <FontAwesomeIcon icon={faSignOutAlt} />
+          </div>
         </div>
 
         <div className="bottom-bar">
