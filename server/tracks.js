@@ -1,20 +1,20 @@
-const SCALING_FACTOR = 3.4;
+const SCALING_FACTOR = 3.0;
 
 const tracks = [
     {
         id: 0,
-        start: [40 * SCALING_FACTOR, 722 * SCALING_FACTOR],
-        end: [313 * SCALING_FACTOR, 568 * SCALING_FACTOR]
+        start: [140, 2900],
+        end: [1250, 2250]
     },
     {
         id: 1,
-        start: [313 * SCALING_FACTOR, 568 * SCALING_FACTOR],
-        end: [91 * SCALING_FACTOR, 401 * SCALING_FACTOR]
+        start: [1250, 2250],
+        end: [380, 1600],
     },
     {
         id: 2,
-        start: [91 * SCALING_FACTOR, 401 * SCALING_FACTOR],
-        end: [250 * SCALING_FACTOR, 270 * SCALING_FACTOR]
+        start: [380, 1600],
+        end: [1000, 1100]
     },
 ]
 

@@ -29,12 +29,11 @@ const server = http.createServer(app);
 ws.init(server);
 
 setInterval(() => {
-  if (Math.random() < 0.8) {
+  if (Math.random() < 0.0) {
     console.log("No user this time");
     return;
   }
-  
-  console.log("Create user");
+
   
   const userId = uniqid("user-");
 
@@ -51,7 +50,7 @@ setInterval(() => {
 
   const timer = setInterval(() => {
     user.move();
-  }, 1000);
+  }, 500);
 
   user.addTimer(timer);
 

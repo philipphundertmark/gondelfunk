@@ -89,7 +89,7 @@ class State{
                 }else {
                     this._interpolateLocation(this.users[user.id].location, user.location);
                 }
-            }else{
+            }else if(!user.deleted){
                 this.users[user.id]=user;
             }
         }
