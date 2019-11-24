@@ -84,7 +84,11 @@ class State{
         for(let user of data){
             if(this.users[user.id]){
                 //assume that only the location can change
-                this._interpolateLocation(this.users[user.id].location,user.location);
+                if(user.deleted){
+                    delete this.users[user.id]
+                }else {
+                    this._interpolateLocation(this.users[user.id].location, user.location);
+                }
             }else{
                 this.users[user.id]=user;
             }

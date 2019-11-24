@@ -2,12 +2,12 @@ function speechBubble(ctx, text, x, y,highlighted,opacity) {
     var messure = ctx.measureText(text);
 
     var w = messure.width;
-    var h = 20;
+    var h = 40;
 
     ctx.beginPath();
     ctx.strokeStyle="black";
     ctx.lineWidth="1";
-    ctx.font = "16px Rubik";
+    ctx.font = "32px Rubik";
     if(highlighted) {
         ctx.fillStyle = "rgba(255, 100, 100,"+ opacity+")";
     }else{

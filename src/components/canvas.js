@@ -101,7 +101,7 @@ const Canvas = React.memo(({onClick}) => {
            let p2 = ctx.transformedPoint(canvas.width,canvas.height);
            ctx.clearRect(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
            drawBackground(ctx);
-           ctx.save();
+
            for(let user of state.getUsers()){
                let x=user.location.x;
                let y=user.location.y;
@@ -109,17 +109,12 @@ const Canvas = React.memo(({onClick}) => {
                let scaleFactor=Math.max(1,viewHeight);
                let width=WIDTH_GONDEL*1/scaleFactor;
                let height=HEIGHT_GONDEL*1/scaleFactor;
-               ctx.save();
-               ctx.translate(canvas.width/2,canvas.height/2);
-
-               // rotate the canvas to the specified degrees
-               //ctx.rotate((Math.random()>0.9?0.1:1)*Math.PI/180);
-
                ctx.drawImage(gondelImage,x-width/2,y-height/2,width,height);
-               ctx.restore();
            }
 
-           for(let message of state.getMessages()){
+           let allUsers=state.getUsers();
+           let allMessanges=allUsers.map(user=>{return {id:Math.random(),message:"Test, Hallo welt",user_id:user.id,user,attention:1}});
+           for(let message of allMessanges){//state.getMessages()){
                let x,y=null;
                if(message.location){
                     x=message.location.x;
@@ -149,8 +144,6 @@ const Canvas = React.memo(({onClick}) => {
            ctx.fillRect(-500,-500,3000,7000);
            ctx.drawImage(backgroundImage,0,0,1600,3400);
        }
-
-       //redraw();
 
        let lastX=canvas.width/2, lastY=canvas.height/2;
        let dragStart,dragged;
@@ -184,18 +177,13 @@ const Canvas = React.memo(({onClick}) => {
 
                let dx=pt.x-dragStart.x;
                let dy=pt.y-dragStart.y;
-             //  console.log(evt.offsetX,pt.x,dPx,pt.x+dPx*(350-evt.offsetX));
-               if((dx>=0 && pt.x-dPx*evt.offsetX>0) || (dx<=0 && pt.x+dPx*(350-evt.offsetX)<1650)) {
+
+               if((dx>=0 && pt.x-dPx*evt.offsetX>0) || (dx<=0 && pt.x+dPx*(350-evt.offsetX)<1600)) {
                    ctx.translate(pt.x - dragStart.x, 0);
                    viewTransform.x += pt.x - dragStart.x;
                    viewTransform.y += pt.y - dragStart.y;
                }
-
-          //     console.log(pt.y-dPy*evt.offsetY);
-               console.log("up",dy, pt.y-dPy*evt.offsetY);
-               console.log("down",dy,pt.y+dPy*(750-evt.offsetY));
-
-              if((dy>0 && pt.y-dPy*evt.offsetY>=-10) || (dy<=0 && (pt.y+dPy*(750-evt.offsetY))<=3400)){
+              if((dy>0 && pt.y-dPy*evt.offsetY>=10) || (dy<=0 && (pt.y+dPy*(750-evt.offsetY))<=3380)){
                    ctx.translate(0,pt.y - dragStart.y);
                }
 
