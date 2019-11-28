@@ -45,12 +45,18 @@ class Store {
                 return;
             }
 
+            let random_user_id=_.sample(this.users.getActives().map(user => user.id));
+            let target_id=null;
+            if(Math.random()<0.2 && random_user_id!==user.id){
+                target_id=random_user_id;
+            }
+
             let message={
                 timestamp: Date.now(),
                 id: uniqid(),
                 message: "Test" + Math.round(Math.random() * 1000),
                 user_id: user.id,
-                target_id: Math.random() > 0.1 ? _.sample(this.users.getActives().map(user => user.id)) : null
+                target_id: target_id
             };
 
             this.messages[message.id]=message;
