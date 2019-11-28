@@ -29,12 +29,11 @@ const server = http.createServer(app);
 ws.init(server);
 
 setInterval(() => {
-  if (Math.random() < 0.0) {
-    console.log("No user this time");
+
+  if (Math.random() < 0.4) {
     return;
   }
 
-  
   const userId = uniqid("user-");
 
   const user = new User(
@@ -48,15 +47,25 @@ setInterval(() => {
     Math.floor(Math.random() * 3)
   );
 
+
   const timer = setInterval(() => {
     user.move();
+    if(user.tick>100){
+      clearInterval(timer);
+    }
   }, 500);
 
   user.addTimer(timer);
 
   store.addUser(user);
 
-}, 2000)
+  store.generateMessageData(3);
+
+}, 1000);
+
+function updateInterval(){
+
+}
 
 const port = process.env.PORT || 8000;
 

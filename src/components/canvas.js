@@ -10,7 +10,7 @@ const HEIGHT=750;
 const WIDTH_GONDEL=100;
 const HEIGHT_GONDEL=100;
 const ZOOM_SPEED=0.3;
-const SCALE_FOR_VISIBLE=0.5;
+const VIEW_HEIGHT_DISPLAY_SPEECH=0.1;
 const MIN_ZOOM=0.2;
 const DEFAULT_INTERPOLATION_INTERVAL=100;
 
@@ -112,9 +112,9 @@ const Canvas = React.memo(({onClick}) => {
                ctx.drawImage(gondelImage,x-width/2,y-height/2,width,height);
            }
 
-           let allUsers=state.getUsers();
-           let allMessanges=allUsers.map(user=>{return {id:Math.random(),message:"Test, Hallo welt",user_id:user.id,user,attention:1}});
-           for(let message of allMessanges){//state.getMessages()){
+           //let allUsers=state.getUsers();
+           //let allMessanges=allUsers.map(user=>{return {id:Math.random(),message:"Test, Hallo welt",user_id:user.id,user,attention:1}});
+           for(let message of state.getMessages()){
                let x,y=null;
                if(message.location){
                     x=message.location.x;
@@ -124,7 +124,7 @@ const Canvas = React.memo(({onClick}) => {
                    y=message.user.location.y;
                }
 
-               if(viewHeight>0.35) {
+               if(viewHeight>VIEW_HEIGHT_DISPLAY_SPEECH) {
 
                    if(message.message.startsWith("0x")){
                        let code=message.message.substr(2,1);

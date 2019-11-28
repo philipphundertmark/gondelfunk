@@ -1,5 +1,13 @@
+let cachedMeasures={};
+
 function speechBubble(ctx, text, x, y,highlighted,opacity) {
-    var messure = ctx.measureText(text);
+    let messure;
+    if(cachedMeasures[text]){
+        messure=cachedMeasures[text];
+    }else{
+        messure = ctx.measureText(text);
+        cachedMeasures[text]=messure;
+    }
 
     var w = messure.width;
     var h = 40;

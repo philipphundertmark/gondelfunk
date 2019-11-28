@@ -1,6 +1,8 @@
 import TWEEN from "@tweenjs/tween.js";
 import _ from 'lodash';
 
+const MAX_TIME_MESSAGE=5;
+
 class State{
     constructor(animationSpeedMessage,animationSpeedLocation){
         this.animationSpeedMessage=animationSpeedMessage;
@@ -13,20 +15,26 @@ class State{
         this.hash=Math.random()*10000;
     }
 
+    _deleteMessages(messages){
+        for(let message of messages){
+            delete this.messages[message.id];
+        }
+    }
+
     updateMessages(data){
         for(let message of data){
-            if(this.messages[message.id]){
-                message.attention=1;
+            if(this.messages[message.id] && this.messages[message.id].user){
                 this.messages[message.id]=Object.assign(this.messages[message.id],message);
             }else{
                 message.user=this.users[message.user_id];
-
-                let messageForUser=this.getMessageForUser(message.user_id);
-                if(messageForUser){
-                    delete this.messages[messageForUser.id];
+                if(!message.user){
+                    continue;
                 }
 
-                message.attention=1;
+                let messagesForUser=this.getMessagesForUser(message.user_id,false,false);
+               this._deleteMessages(messagesForUser);
+
+                message.attention=1.;
                 if(message.target_id && this.users[message.target_id]){
                     message.target=this.users[message.target_id];
                     message.location=Object.assign({},message.user.location);
@@ -38,8 +46,15 @@ class State{
         }
     }
 
-    getMessageForUser(user_id){
-        return _.find(this.getMessages(),{'user_id':user_id,target_id:null})
+    getMessagesForUser(user_id,includeResponses=false,includeAnswers=true){
+        let messages=[];
+        for(let message of this.getMessages()){
+            if((includeAnswers && message.target_id===user_id) || (message.user_id===user_id && (includeResponses || (!includeResponses && !message.target_id)))){
+                messages.push(message);
+            }
+        }
+
+        return messages;
     }
 
     _interpolateLocation(location,target){
@@ -67,9 +82,11 @@ class State{
         //decay messages
         let deleteIds=[];
         for(let message of _.values(this.messages)){
-            message.attention-=deltaTime/1000*1/50;
-            if(message.attention<0){
-               deleteIds.push(message.id);
+            if(!message.target_id) {
+                message.attention -= deltaTime / 1000 * 1 / MAX_TIME_MESSAGE;
+                if (message.attention < 0) {
+                    deleteIds.push(message.id);
+                }
             }
         }
 
@@ -85,6 +102,7 @@ class State{
             if(this.users[user.id]){
                 //assume that only the location can change
                 if(user.deleted){
+                    this._deleteMessages(this.getMessagesForUser(user.id,true,true));
                     delete this.users[user.id]
                 }else {
                     this._interpolateLocation(this.users[user.id].location, user.location);

@@ -1,6 +1,6 @@
 const tracks = require('./tracks');
 
-const SPEED=40;
+const SPEED=30;
 
 class User {
     constructor(id, age, gender, track) {
@@ -17,6 +17,8 @@ class User {
             x: this.track.start[0], 
             y: this.track.start[1]
         };
+
+        this.tick=0;
     }
 
     getWSData() {
@@ -31,25 +33,23 @@ class User {
     }
 
     move() {
+        this.tick++;
         if(this.deleted){
             return;
         }
-        const { x, y } = this.location;
 
-         let endX=this.track.end[0];
-         let endY=this.track.end[1];
-
+        let endX=this.track.end[0];
+        let endY=this.track.end[1];
 
         let dx=endX-this.location.x;
         let dy=endY-this.location.y;
 
-
-
         let norm=Math.sqrt(dx*dx+dy*dy);
-        if(Math.abs(dx)+Math.abs(dy)<40){
 
+        if(Math.abs(dx)+Math.abs(dy)<40){
             this.deleted=true;
         }
+
         this.location.x+=dx/norm*SPEED;
         this.location.y+=dy/norm*SPEED;
     }
