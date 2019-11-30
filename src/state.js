@@ -81,7 +81,8 @@ class State{
         let deltaTime=time-this._lastTick;
         //decay messages
         let deleteIds=[];
-        for(let message of _.values(this.messages)){
+        let messages=_.values(this.messages);
+        for(let message of messages){
             if(!message.target_id) {
                 message.attention -= deltaTime / 1000 * 1 / MAX_TIME_MESSAGE;
                 if (message.attention < 0) {

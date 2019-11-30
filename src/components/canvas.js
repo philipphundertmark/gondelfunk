@@ -3,22 +3,22 @@ import { WebSocketContext } from "../contexts/WebSocketContext";
 import state from '../state';
 import * as CHelper from '../canvas-helper';
 import _ from 'lodash';
-import {find} from "rxjs/operators";
 
-const WIDTH=350;
-const HEIGHT=750;
+const W_CANVAS=350;
+const H_CANVAS=750;
 const WIDTH_GONDEL=100;
 const HEIGHT_GONDEL=100;
 const ZOOM_SPEED=0.3;
 const VIEW_HEIGHT_DISPLAY_SPEECH=0.1;
-const MIN_ZOOM=0.2;
+const MIN_ZOOM=0.23;
+const SCALE_FACTOR=1.25;
+
+const WIDTH_IMAGE=1600;
+const HEIGHT_IMAGE=3400;
 const DEFAULT_INTERPOLATION_INTERVAL=100;
 
 const ANIMATION_SPEED_MESSAGE=3000;
 const ANIMATION_SPEED_LOCATION=3000;
-/**TODO
- * wobbling gondle
- */
 
 const Canvas = React.memo(({onClick}) => {
   const { subscribe } = useContext(WebSocketContext);
@@ -62,8 +62,8 @@ const Canvas = React.memo(({onClick}) => {
        let backgroundImage=document.getElementById('skikarte');
        let gondelImage=document.getElementById('gondel');
 
-       canvas.width = WIDTH;
-       canvas.height = HEIGHT;
+       canvas.width = W_CANVAS;
+       canvas.height = H_CANVAS;
 
        let ctx = canvas.getContext('2d');
        trackTransforms(ctx);
@@ -142,7 +142,7 @@ const Canvas = React.memo(({onClick}) => {
        function drawBackground(ctx){
            ctx.fillStyle="#fff";
            ctx.fillRect(-500,-500,3000,7000);
-           ctx.drawImage(backgroundImage,0,0,1600,3400);
+           ctx.drawImage(backgroundImage,0,0,WIDTH_IMAGE,HEIGHT_IMAGE);
        }
 
        let lastX=canvas.width/2, lastY=canvas.height/2;
@@ -164,9 +164,8 @@ const Canvas = React.memo(({onClick}) => {
                dragged=false;
                return;
            }
-           lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
-           lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
-
+           lastX = evt.offsetX;
+           lastY = evt.offsetY;
            dragged = true;
            if (dragStart){
                let pt = ctx.transformedPoint(lastX,lastY);
@@ -178,15 +177,20 @@ const Canvas = React.memo(({onClick}) => {
                let dx=pt.x-dragStart.x;
                let dy=pt.y-dragStart.y;
 
-               if((dx>=0 && pt.x-dPx*evt.offsetX>0) || (dx<=0 && pt.x+dPx*(350-evt.offsetX)<1600)) {
-                   ctx.translate(pt.x - dragStart.x, 0);
-                   viewTransform.x += pt.x - dragStart.x;
-                   viewTransform.y += pt.y - dragStart.y;
-               }
-              if((dy>0 && pt.y-dPy*evt.offsetY>=10) || (dy<=0 && (pt.y+dPy*(750-evt.offsetY))<=3380)){
-                   ctx.translate(0,pt.y - dragStart.y);
+
+               if(dx>0) {
+                   dx = Math.min(dx, -1 * (dPx * evt.offsetX - pt.x));
+               }else{
+                   dx=Math.max(dx,-1*(WIDTH_IMAGE-pt.x-dPx*(W_CANVAS-evt.offsetX)));
                }
 
+               if(dy>0){
+                   dy=Math.min(dy,-1*(dPy*evt.offsetY-pt.y));
+               }else{
+                   dy=Math.max(dy,-1*(HEIGHT_IMAGE-pt.y-dPy*(H_CANVAS-evt.offsetY)));
+               }
+
+               ctx.translate(dx,dy);
            }
        },false);
 
@@ -205,21 +209,52 @@ const Canvas = React.memo(({onClick}) => {
            }
        },false);
 
-       let scaleFactor = 1.2;
-       let zoom = function(clicks){
+       let zoom = function(clicks,evt){
            let pt = ctx.transformedPoint(lastX,lastY);
+           let offsetX=evt.offsetX;
+           let offsetY=evt.offsetY;
+           let pt2x=ctx.transformedPoint(lastX+1,lastY);
+           let pt2y=ctx.transformedPoint(lastX,lastY+1);
+           let dPx=pt2x.x-pt.x;
+           let dPy=pt2y.y-pt.y;
 
            let zoomSpeed=Math.min(ZOOM_SPEED,Math.max(-ZOOM_SPEED,clicks));
-           let factor = Math.pow(scaleFactor,zoomSpeed);
+           let factor = Math.pow(SCALE_FACTOR,zoomSpeed);
            if(viewHeight*factor<MIN_ZOOM|| viewHeight*factor>1.5){
                return;
            }
 
-           ctx.translate(pt.x,pt.y);
-           viewHeight*=factor;
+           if(factor>1) {
+               ctx.translate(pt.x, pt.y);
+               viewHeight *= factor;
+               ctx.scale(factor, factor);
+               ctx.translate(-pt.x, -pt.y);
+           }else{//prevent zooming out of range
 
-           ctx.scale(factor,factor);
-           ctx.translate(-pt.x,-pt.y);
+               dPx*=1/factor;
+               dPy*=1/factor;
+
+               ctx.translate(pt.x, pt.y);
+               viewHeight *= factor;
+
+               ctx.scale(factor, factor);
+
+               let tx = pt.x;
+               if(pt.x-offsetX*dPx<0){
+                    tx+=-1*(pt.x-offsetX*dPx);
+               }else if (pt.x+(W_CANVAS-offsetX)*dPx>WIDTH_IMAGE){
+                    tx-=pt.x+(W_CANVAS-offsetX)*dPx-WIDTH_IMAGE;
+               }
+
+               let ty=pt.y;
+               if(pt.y-offsetY*dPy<0){
+                   ty+=-1*(pt.y-offsetY*dPy);
+               }else if(pt.y+(H_CANVAS-offsetY)*dPy>HEIGHT_IMAGE){
+                   ty-=pt.y+(H_CANVAS-offsetY)*dPy-HEIGHT_IMAGE;
+               }
+
+               ctx.translate(-tx, -ty);
+           }
        };
 
        function zoomToFixed(scale){
@@ -230,15 +265,17 @@ const Canvas = React.memo(({onClick}) => {
        }
 
        let handleScroll = function(evt){
+           lastX=evt.offsetX;
+           lastY=evt.offsetY;
            let delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.detail ? -evt.detail : 0;
-           if (delta) zoom(delta);
+           if (delta) zoom(delta,evt);
            return evt.preventDefault() && false;
        };
        canvas.addEventListener('DOMMouseScroll',handleScroll,false);
        canvas.addEventListener('mousewheel',handleScroll,false);
 
        //Initialize view
-       zoomToFixed(0.22);
+       zoomToFixed(MIN_ZOOM);
    }
 
 
