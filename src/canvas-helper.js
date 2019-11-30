@@ -1,6 +1,6 @@
 let cachedMeasures={};
 
-function speechBubble(ctx, text, x, y,highlighted,opacity) {
+function speechBubble(ctx, text, x, y,highlighted,opacity,sex) {
     let messure;
     if(cachedMeasures[text]){
         messure=cachedMeasures[text];
@@ -10,17 +10,27 @@ function speechBubble(ctx, text, x, y,highlighted,opacity) {
     }
 
     var w = messure.width;
-    var h = 40;
+    var h = 60;
 
     ctx.beginPath();
     ctx.strokeStyle="black";
+
     ctx.lineWidth="1";
     ctx.font = "32px Rubik";
     if(highlighted) {
+        ctx.lineWidth="4";
         ctx.fillStyle = "rgba(255, 100, 100,"+ opacity+")";
-    }else{
-        ctx.fillStyle = "rgba(255, 255, 255, " + opacity+")";
+    }else {
+        if (sex === "mars") {
+            ctx.fillStyle = "rgba(128, 190, 255, " + opacity + ")";
+        } else if (sex === "venus") {
+            ctx.fillStyle = "rgba(255, 128, 168, " + opacity + ")";
+        } else {
+            ctx.fillStyle = "rgba(255, 255, 255, " + opacity + ")";
+        }
     }
+
+
 
     ctx.moveTo(x, y);
     ctx.lineTo(x + (w*0.2), y);
@@ -48,7 +58,7 @@ function speechBubble(ctx, text, x, y,highlighted,opacity) {
 
     ctx.textAlign = 'left';
     ctx.fillStyle = '#000';
-    ctx.fillText(text, x, y-6);
+    ctx.fillText(text, x, y-18);
 
     return {width:w*1.5,height:h*1.5};
 }

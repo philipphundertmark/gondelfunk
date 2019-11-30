@@ -130,7 +130,7 @@ const Canvas = React.memo(({onClick}) => {
                        let code=message.message.substr(2,1);
                        CHelper.emoticonBubble(ctx, code, x, y);
                    }else {
-                       let dimensions = CHelper.speechBubble(ctx, message.message, x, y, message.selected, message.attention);
+                       let dimensions = CHelper.speechBubble(ctx, message.message, x, y, message.selected, message.attention,message.user.sex);
                        message.dimensions = dimensions;
 
                    }

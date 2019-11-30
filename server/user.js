@@ -1,6 +1,6 @@
 const tracks = require('./tracks');
 
-const SPEED=30;
+const SPEED=15;
 
 class User {
     constructor(id, age, gender, track) {

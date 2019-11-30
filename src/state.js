@@ -2,6 +2,8 @@ import TWEEN from "@tweenjs/tween.js";
 import _ from 'lodash';
 
 const MAX_TIME_MESSAGE=5;
+const MAX_AGE_MESSAGE=70000;//max time before message is removed from state after deletion
+const INTERVAL_CLEANUP=10000;
 
 class State{
     constructor(animationSpeedMessage,animationSpeedLocation){
@@ -11,19 +13,22 @@ class State{
         this.users={};
 
         this._lastTick=0;
+        this._lastCleanup=0;
         requestAnimationFrame((time)=>this._animate(time));
-        this.hash=Math.random()*10000;
+        this.hash=Math.round(Math.random()*10000);
     }
 
     _deleteMessages(messages){
         for(let message of messages){
-            delete this.messages[message.id];
+            this.messages[message.id].timestamp=Date.now();
+            this.messages[message.id].deleted=true;
         }
     }
 
     updateMessages(data){
+        let currentTime=Date.now();
         for(let message of data){
-            if(this.messages[message.id] && this.messages[message.id].user){
+            if(this.messages[message.id]){
                 this.messages[message.id]=Object.assign(this.messages[message.id],message);
             }else{
                 message.user=this.users[message.user_id];
@@ -67,7 +72,7 @@ class State{
     _interpolateMessage(from,to,id){
         const tween = new TWEEN.Tween(from) // Create a new tween that modifies 'coords'.
             .to(to, this.animationSpeedMessage) // Move to (300, 200) in 1 second.
-            .easing(TWEEN.Easing.Quadratic.Out) // Use an easing function to make the animation smooth
+            .easing(TWEEN.Easing.Linear.None)
             .start() // Start the tween immediately.
             .onComplete(()=>{
                 delete this.messages[id];
@@ -80,22 +85,21 @@ class State{
 
         let deltaTime=time-this._lastTick;
         //decay messages
-        let deleteIds=[];
-        let messages=_.values(this.messages);
+        let messages=this.getMessages();
         for(let message of messages){
             if(!message.target_id) {
                 message.attention -= deltaTime / 1000 * 1 / MAX_TIME_MESSAGE;
                 if (message.attention < 0) {
-                    deleteIds.push(message.id);
+                    message.deleted=true;
                 }
             }
         }
 
-        for(let id of deleteIds){
-           delete this.messages[id];
-        }
-
         this._lastTick=time;
+        if(time-this._lastCleanup>INTERVAL_CLEANUP){
+            this._cleanup();
+            this._lastCleanup=time;
+        }
     }
 
     updateUsers(data){
@@ -119,7 +123,17 @@ class State{
     }
 
     getMessages(){
-        return Object.values(this.messages);
+        return Object.values(this.messages).filter(message=>!message.deleted);
+    }
+
+    _cleanup(){
+        let now=Date.now();
+        let messages=_.values(this.messages);
+        for(let message of messages){
+            if(message.deleted &&now-message.timestamp>MAX_AGE_MESSAGE){
+                delete this.messages[message.id];
+            }
+        }
     }
 
     getAnswers(){
@@ -127,4 +141,4 @@ class State{
     }
 }
 
-export default new State(5000,1500);
+export default new State(5000,1900);

@@ -30,7 +30,7 @@ class Store {
 
             ws.broadcast(usersUpdate);
             ws.broadcast(messageUpdate);
-        }, 1000);
+        }, 1500);
 
         this.cleanupInterval = setInterval(()=>{
             this.cleanup();
@@ -54,7 +54,7 @@ class Store {
             let message={
                 timestamp: Date.now(),
                 id: uniqid(),
-                message: "Test" + Math.round(Math.random() * 1000),
+                message: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5),
                 user_id: user.id,
                 target_id: target_id
             };
@@ -71,11 +71,11 @@ class Store {
     //removes old messages and inactive users
     cleanup(){
         let currentTime=Date.now();
-        for(let message of _.values(this.messages)){
+      /*  for(let message of _.values(this.messages)){
             if(currentTime-message.timestamp>MAX_AGE_MESSAGE){
                 delete this.messages[message.id];
             }
-        }
+        }*/
 
         for(let user of this.users.getAll()){
             if(currentTime-user.timestamp>MAX_AGE_USER_DELETED){
