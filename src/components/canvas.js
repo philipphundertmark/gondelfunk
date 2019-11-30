@@ -128,11 +128,10 @@ const Canvas = React.memo(({onClick}) => {
 
                    if(message.message.startsWith("0x")){
                        let code=message.message.substr(2,1);
-                       CHelper.emoticonBubble(ctx, code, x, y);
+                       CHelper.emoticonBubble(ctx, code, x, y,message.target_id,message.attention,message.user.sex);
                    }else {
                        let dimensions = CHelper.speechBubble(ctx, message.message, x, y, message.selected, message.attention,message.user.sex);
                        message.dimensions = dimensions;
-
                    }
                }
            }

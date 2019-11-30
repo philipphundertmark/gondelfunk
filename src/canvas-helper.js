@@ -1,5 +1,16 @@
 let cachedMeasures={};
 
+const emoticonImages=[
+    'emoji_aubergine',
+    'emoji_beer',
+    'emoji_frozen',
+    'emoji_gondel',
+    'emoji_mountain',
+    'emoji_poop',
+    'emoji_sonnenbrille',
+    'emoji_stars'
+];
+
 function speechBubble(ctx, text, x, y,highlighted,opacity,sex) {
     let messure;
     if(cachedMeasures[text]){
@@ -12,6 +23,16 @@ function speechBubble(ctx, text, x, y,highlighted,opacity,sex) {
     var w = messure.width;
     var h = 60;
 
+    drawBubble(ctx,x,y,w,h,highlighted,1.,sex);
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#000';
+    ctx.fillText(text, x, y-18);
+
+    return {width:w*1.5,height:h*1.5};
+}
+
+function drawBubble(ctx,x,y,w,h,highlighted,opacity,sex){
     ctx.beginPath();
     ctx.strokeStyle="black";
 
@@ -56,22 +77,18 @@ function speechBubble(ctx, text, x, y,highlighted,opacity,sex) {
     ctx.stroke();
     ctx.closePath();
 
-    ctx.textAlign = 'left';
-    ctx.fillStyle = '#000';
-    ctx.fillText(text, x, y-18);
-
     return {width:w*1.5,height:h*1.5};
 }
 
-function emoticonBubble(ctx,code,x,y,opacity){
-    let elementId='emoticonFrozen';
-    switch(code){
-        case 0:
-            elementId='emoticonFrozen';
-            break;
-    }
+function emoticonBubble(ctx,code,x,y,isAnswer,opacity,sex){
+    let elementId=emoticonImages[code] || 'emoji_frozen';
     let image=document.getElementById(elementId);
-    ctx.drawImage(image,x,y,40,40);
+    if(!isAnswer){
+        let w = 50;
+        let h = 60;
+        drawBubble(ctx,x,y,w,h,false,1.,sex)
+    }
+    ctx.drawImage(image,x,y-55,50,50);
 }
 
 export {speechBubble,emoticonBubble}

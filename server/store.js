@@ -51,10 +51,17 @@ class Store {
                 target_id=random_user_id;
             }
 
+            let content;
+            if(Math.random()>0.5){
+                content=Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, _.random(5,20));
+            }else{
+                content="0x"+_.random(0,10).toString();
+            }
+
             let message={
                 timestamp: Date.now(),
                 id: uniqid(),
-                message: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5),
+                message: content,
                 user_id: user.id,
                 target_id: target_id
             };
