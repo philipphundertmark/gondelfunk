@@ -60,8 +60,6 @@ setInterval(() => {
   store.addUser(user);
 
 
-  store.generateMessageData(3);
-
 }, 1000);
 
 function updateInterval(){

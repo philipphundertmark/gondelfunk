@@ -10,7 +10,6 @@ const CLEANUP_INTERVAL=5000;
 class Store {
     constructor() {
         this.users = new Users();
-        this.messages={};
         this.initLoop();
     }
 
@@ -25,7 +24,7 @@ class Store {
 
             const messageUpdate = JSON.stringify({
                 type:"message",
-                data: _.values(this.messages)
+                data: this.generateMessageData(_.random(0,3))
             });
 
             ws.broadcast(usersUpdate);
@@ -38,6 +37,7 @@ class Store {
     }
 
     generateMessageData(count){
+        let messages=[];
         for(let i=0;i<count;i++) {
             let user=_.sample(this.users.getActives());
 
@@ -59,8 +59,10 @@ class Store {
                 target_id: target_id
             };
 
-            this.messages[message.id]=message;
+            messages.push(message);
         }
+
+        return messages;
     }
 
 
@@ -71,11 +73,6 @@ class Store {
     //removes old messages and inactive users
     cleanup(){
         let currentTime=Date.now();
-      /*  for(let message of _.values(this.messages)){
-            if(currentTime-message.timestamp>MAX_AGE_MESSAGE){
-                delete this.messages[message.id];
-            }
-        }*/
 
         for(let user of this.users.getAll()){
             if(currentTime-user.timestamp>MAX_AGE_USER_DELETED){
