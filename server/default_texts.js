@@ -7,14 +7,13 @@ const messages = [
     "Alter",
     "Geilomat",
     "Scheiß Snowboarder",
-    "Blöde Dreckssau",
     "Zu viel los!",
     "Peace!!",
     "Wie geil ist das denn?",
     "Ich könnte Eier legen vor Freude",
     "Gerade ein Ei gelegt",
     "Schnee, Sonne, Sex :D",
-    "FICKEN!!!",
+    "SEX",
     "Gondelfunk rockt",
     "Geile App",
     "das ist sooo lustig",
@@ -37,7 +36,7 @@ const answers=[
     "Jo!",
     "Hast ja recht!",
     "Yesssss",
-    "Fuck you",
+    "F*** you",
     "C'mon",
     "Same, Same",
     "I don't get it",
@@ -45,7 +44,7 @@ const answers=[
     "Selber Arschloch",
     "Penner",
     "Deine Mutter",
-    "Halt doch dein Maul",
+    "Unsinn...",
     "Bock auf Sex?"
 ];
 
