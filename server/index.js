@@ -30,7 +30,7 @@ ws.init(server);
 
 setInterval(() => {
 
-  if (Math.random() < 0.4) {
+  if (Math.random() < 0.3) {
     return;
   }
 
@@ -60,7 +60,7 @@ setInterval(() => {
   store.addUser(user);
 
 
-}, 1000);
+}, 1500);
 
 function updateInterval(){
 

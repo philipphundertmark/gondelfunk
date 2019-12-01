@@ -2,7 +2,9 @@ const ws = require('./websocket');
 const _ = require('lodash');
 const uniqid = require("uniqid");
 const Users = require('./users');
-
+const defaultTexts = require('./default_texts');
+const defaultMessages=defaultTexts.messages;
+const defaultAnswers=defaultTexts.answers;
 const MAX_AGE_USER_DELETED=60000;
 const CLEANUP_INTERVAL=5000;
 
@@ -28,7 +30,7 @@ class Store {
 
             ws.broadcast(usersUpdate);
             ws.broadcast(messageUpdate);
-        }, 1500);
+        }, 1000);
 
         this.cleanupInterval = setInterval(()=>{
             this.cleanup();
@@ -46,15 +48,20 @@ class Store {
 
             let random_user_id=_.sample(this.users.getActives().map(user => user.id));
             let target_id=null;
+            let content;
             if(Math.random()<0.2 && random_user_id!==user.id){
                 target_id=random_user_id;
-            }
-
-            let content;
-            if(Math.random()>0.5){
-                content=Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, _.random(5,20));
-            }else{
-                content="0x"+_.random(0,10).toString();
+                if(Math.random()>0.5){
+                    content="0x"+_.random(0,10).toString();
+                }else{
+                    content=_.sample(defaultAnswers);
+                }
+            }else {
+                if (Math.random() > 0.5) {
+                    content = _.sample(defaultMessages);
+                } else {
+                    content = "0x" + _.random(0, 10).toString();
+                }
             }
 
             let message={

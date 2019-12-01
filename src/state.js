@@ -1,7 +1,7 @@
 import TWEEN from "@tweenjs/tween.js";
 import _ from 'lodash';
 
-const MAX_TIME_MESSAGE=5;
+const MAX_TIME_MESSAGE=15;
 const MAX_AGE_MESSAGE=70000;//max time before message is removed from state after deletion
 const INTERVAL_CLEANUP=10000;
 
@@ -71,11 +71,11 @@ class State{
 
     _interpolateMessage(from,to,id){
         const tween = new TWEEN.Tween(from) // Create a new tween that modifies 'coords'.
-            .to(to, this.animationSpeedMessage) // Move to (300, 200) in 1 second.
-            .easing(TWEEN.Easing.Linear.None)
+            .to(Object.assign({},to), this.animationSpeedMessage) // Move to (300, 200) in 1 second.
+            .easing(TWEEN.Easing.Quadratic.InOut)
             .start() // Start the tween immediately.
             .onComplete(()=>{
-                delete this.messages[id];
+                setTimeout(()=>delete this.messages[id],1500);
         })
     }
 
@@ -141,4 +141,4 @@ class State{
     }
 }
 
-export default new State(5000,1900);
+export default new State(3000,1900);

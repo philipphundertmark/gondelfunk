@@ -11,33 +11,43 @@ const emoticonImages=[
     'emoji_stars'
 ];
 
-function speechBubble(ctx, text, x, y,highlighted,opacity,sex) {
-    let messure;
-    if(cachedMeasures[text]){
-        messure=cachedMeasures[text];
-    }else{
-        messure = ctx.measureText(text);
-        cachedMeasures[text]=messure;
+var measureWidthElement=null;
+
+function speechBubble(ctx, text, x, y,highlighted,opacity,sex,scale=1) {
+    if(!measureWidthElement){
+        measureWidthElement=document.getElementById("measureWidthElement");
     }
 
-    var w = messure.width;
-    var h = 60;
+    let fontsize=32*scale;
+    ctx.font = `${fontsize}px Rubik`;
 
-    drawBubble(ctx,x,y,w,h,highlighted,1.,sex);
+    let messure;
+    let hash=text+"$"+scale;
+    if(cachedMeasures[hash]){
+        messure=cachedMeasures[hash];
+    }else{
+        messure = ctx.measureText(text).width;
+        cachedMeasures[hash]=messure;
+    }
+
+    var w = messure;
+    var h = 60*scale;
+
+    drawBubble(ctx,x,y,w,h,highlighted,1.,sex,scale);
 
     ctx.textAlign = 'left';
     ctx.fillStyle = '#000';
-    ctx.fillText(text, x, y-18);
+
+    ctx.fillText(text, x, y-18*scale);
 
     return {width:w*1.5,height:h*1.5};
 }
 
-function drawBubble(ctx,x,y,w,h,highlighted,opacity,sex){
+function drawBubble(ctx,x,y,w,h,highlighted,opacity,sex,scale){
     ctx.beginPath();
     ctx.strokeStyle="black";
 
     ctx.lineWidth="1";
-    ctx.font = "32px Rubik";
     if(highlighted) {
         ctx.lineWidth="4";
         ctx.fillStyle = "rgba(255, 100, 100,"+ opacity+")";
@@ -53,11 +63,11 @@ function drawBubble(ctx,x,y,w,h,highlighted,opacity,sex){
 
 
 
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + (w*0.2), y);
-    ctx.lineTo(x + (w*0.2), y+10);
-    ctx.lineTo(x + (w*0.3), y);
-    ctx.lineTo(x + w, y);
+    ctx.moveTo(x-(w*0.1), y);
+    ctx.lineTo(x-(w*0.1), y);
+    ctx.lineTo(x-(w*0.1), y+20);
+    ctx.lineTo(x-(w*0.1)+20, y);
+    ctx.lineTo(x -(w*0.1) + w, y);
 
     ctx.quadraticCurveTo(x + (w*1.1), y, x + (w*1.1), y-(h*0.2)); // corner: right-bottom
 
@@ -71,7 +81,8 @@ function drawBubble(ctx,x,y,w,h,highlighted,opacity,sex){
 
     ctx.lineTo(x - (w*0.1), y-(h*0.2)); // left
 
-    ctx.quadraticCurveTo(x - (w*0.1), y, x, y); // corner: left-bottom
+    ctx.lineTo(x- (w*0.1),y);
+    //ctx.quadraticCurveTo(x - (w*0.1), y, x, y); // corner: left-bottom
 
     ctx.fill();
     ctx.stroke();
@@ -80,15 +91,17 @@ function drawBubble(ctx,x,y,w,h,highlighted,opacity,sex){
     return {width:w*1.5,height:h*1.5};
 }
 
-function emoticonBubble(ctx,code,x,y,isAnswer,opacity,sex){
+function emoticonBubble(ctx,code,x,y,isAnswer,opacity,sex,scale=1){
     let elementId=emoticonImages[code] || 'emoji_frozen';
     let image=document.getElementById(elementId);
+
+    let w=50*scale;
+    let h=60*scale;
     if(!isAnswer){
-        let w = 50;
-        let h = 60;
-        drawBubble(ctx,x,y,w,h,false,1.,sex)
+        drawBubble(ctx,x,y,w,h,false,1.,sex,scale)
     }
-    ctx.drawImage(image,x,y-55,50,50);
+    let offset=55*scale;
+    ctx.drawImage(image,x,y-offset,50*scale,50*scale);
 }
 
 export {speechBubble,emoticonBubble}

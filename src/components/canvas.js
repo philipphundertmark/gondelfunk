@@ -27,9 +27,9 @@ const Canvas = React.memo(({onClick}) => {
   const [initialized,setInitialized] = React.useState(false);
  
   function updateData(data){
-      if(data.type==="user"){
+      if(data.type==="user" && data["data"].length){
         state.updateUsers(data["data"]);
-      }else if(data.type==="message"){
+      }else if(data.type==="message" && data["data"].length){
         state.updateMessages(data["data"]);
       }
   }
@@ -125,12 +125,15 @@ const Canvas = React.memo(({onClick}) => {
                }
 
                if(viewHeight>VIEW_HEIGHT_DISPLAY_SPEECH) {
-
+                   let scale=Math.min(1.8,1/viewHeight)*_.clamp(message.attention+0.3,0.5,1);
+                   if(message.target_id){
+                       scale*=0.8;
+                   }
                    if(message.message.startsWith("0x")){
                        let code=message.message.substr(2,1);
-                       CHelper.emoticonBubble(ctx, code, x, y,message.target_id,message.attention,message.user.sex);
+                       CHelper.emoticonBubble(ctx, code, x, y,message.target_id,message.attention,message.user.sex,scale);
                    }else {
-                       let dimensions = CHelper.speechBubble(ctx, message.message, x, y, message.selected, message.attention,message.user.sex);
+                       let dimensions = CHelper.speechBubble(ctx, message.message, x, y, message.selected, message.attention,message.user.sex,scale);
                        message.dimensions = dimensions;
                    }
                }
@@ -193,13 +196,16 @@ const Canvas = React.memo(({onClick}) => {
            }
        },false);
 
+
        canvas.addEventListener('mouseout',function(){
             mouseleft=true;
        });
 
        canvas.addEventListener('mouseup',function(evt){
            dragStart = null;
-
+           if(dragged){
+               return;
+           }
            let pt = ctx.transformedPoint(lastX,lastY);
            let message=findMessageAtPosition(pt.x,pt.y);
            if(message){
