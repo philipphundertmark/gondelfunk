@@ -6,6 +6,7 @@ class Users{
     }
 
     add(user){
+        user.timestamp=Date.now();
         this.users[user.id]=user;
     }
 

@@ -3,7 +3,6 @@ const _ = require('lodash');
 const uniqid = require("uniqid");
 const Users = require('./users');
 
-const MAX_AGE_MESSAGE=60000;
 const MAX_AGE_USER_DELETED=60000;
 const CLEANUP_INTERVAL=5000;
 
@@ -82,8 +81,8 @@ class Store {
         let currentTime=Date.now();
 
         for(let user of this.users.getAll()){
-            if(currentTime-user.timestamp>MAX_AGE_USER_DELETED){
-                this.users.delete(user);
+            if(user.deleted && currentTime-user.timestamp>MAX_AGE_USER_DELETED){
+                   this.users.delete(user);
             }
         }
 
